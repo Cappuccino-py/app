@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>注册</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: sans-serif; margin: 0; padding: 20px; background: #fff; }
+  h1 { text-align: center; font-size: 22px; }
+  .field { margin-bottom: 16px; }
+  label { display: block; font-size: 14px; color: #555; margin-bottom: 6px; }
+  input, textarea, select { width: 100%; padding: 10px; font-size: 16px;
+                            border: 1px solid #ccc; border-radius: 8px; }
+  textarea { height: 80px; resize: none; }
+  button { width: 100%; padding: 12px; font-size: 16px; background: #4a90e2;
+           color: #fff; border: none; border-radius: 8px; margin-top: 10px; }
+  .avatar-preview { width: 80px; height: 80px; border-radius: 50%;
+                    background: #eee; display: block; margin: 0 auto 10px;
+                    object-fit: cover; }
+  .code { color: #999; font-size: 13px; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<h1>注册</h1>
+
+<img id="preview" class="avatar-preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect fill='%23ddd' width='80' height='80'/%3E%3C/svg%3E">
+
+<div class="field">
+  <label>头像（从相册上传）</label>
+  <input type="file" id="avatar" accept="image/*">
+</div>
+
+<div class="field">
+  <label>名字 *</label>
+  <input type="text" id="nickname" maxlength="20" placeholder="你的昵称">
+</div>
+
+<div class="field">
+  <label>性别（可不选）</label>
+  <select id="gender">
+    <option value="">不选</option>
+    <option value="男">男</option>
+    <option value="女">女</option>
+  </select>
+</div>
+
+<div class="field">
+  <label>个人介绍（最多 50 字）</label>
+  <textarea id="bio" maxlength="50" placeholder="介绍一下自己..."></textarea>
+</div>
+
+<button onclick="register()">注册</button>
+
+<div id="result"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://bzhntlpdouhwcbqcdsfj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Cwuigqfp_poxrjYjVVtJkQ_klug8TTt";
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+document.getElementById("avatar").onchange = function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => document.getElementById("preview").src = ev.target.result;
+  reader.readAsDataURL(file);
+};
+
+async function genCode() {
+  for (let i = 0; i < 20; i++) {
+    const code = "#" + Math.floor(1000 + Math.random() * 9000);
+    const { data } = await db.from("users").select("id").eq("code", code);
+    if (!data || data.length === 0) return code;
+  }
+  return "#" + Date.now().toString().slice(-4);
+}
+
+async function register() {
+  const nickname = document.getElementById("nickname").value.trim();
+  if (!nickname) { alert("名字不能空"); return; }
+
+  const gender = document.getElementById("gender").value;
+  const bio = document.getElementById("bio").value.trim();
+  const avatarEl = document.getElementById("preview");
+  const avatar = avatarEl.src.startsWith("data:image") && avatarEl.src.length > 200
+    ? avatarEl.src : "";
+
+  const code = await genCode();
+
+  const { error } = await db.from("users").insert({
+    code: code, nickname: nickname, gender: gender, bio: bio, avatar: avatar
+  });
+
+  if (error) { alert("注册失败：" + error.message); return; }
+
+  localStorage.setItem("myCode", code);
+  document.getElementById("result").innerHTML =
+    `<div style="margin-top:20px;text-align:center">
+       ✅ 注册成功！<br>
+       你的编码：<b>${code}</b><br>
+       <span class="code">记住它，别人靠这个找你</span>
+     </div>`;
+}
+</script>
+</body>
+</html>
