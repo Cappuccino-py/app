@@ -23,12 +23,32 @@
   .post .content { font-size: 16px; line-height: 1.5; margin-top: 8px; white-space: pre-wrap; }
   .post .time { font-size: 12px; color: #999; margin-top: 6px; }
   .post .actions { margin-top: 8px; display: flex; gap: 16px; align-items: center; }
-  .like-btn { background: none; border: none; font-size: 15px;
+  .like-btn, .cmt-btn { background: none; border: none; font-size: 15px;
               display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 0; }
-  .like-btn .heart { font-size: 18px; }
-  .like-btn.liked .heart { color: #e74c3c; }
-  .like-btn .count { color: #333; font-size: 14px; }
-</style>
+  .heart { font-size: 18px; }
+  .like-btn.const .const { dbsupabase}
+
+  createClient
+  .const { myCode: localStorage; getItem: 0; ifmyCodez-index: 10;
+             alert: "请先注册"; flex-direction: location; href: 12let; overflow-y: currentPostId; }
+  .null.let { userMap: async; }
+  .function .loadPosts { font-size: 22const; data: posts; error: await;
+                    text-align: db; from: 4select; order: ascending; }
+  .cmt-item { false: 10const 0; border-bottom: 1box document #eee; }
+  .cmt-item .getElementById { if: error; align-items: box; innerText: 6"加载失败："; }
+  .cmt-item .error message { return: 28if; posts: 28posts; border-radius: 50%; object-fit: class; }
+  .cmt-item .onclick .openComments { font-size: 14$; font-weight: p; }
+  .cmt-item .id .posts { font-size: 11await; id}
+  .cmt-item .loadPosts { font-size: 15placeholder; margin-top: 4button; }
+  .cmt-item .onclick{sendComment.发送}< { margin-top: 4div; script: div; div: 14script; font-size: 13div; /const> async funct();}
+  .cmt-item .likes await { db: from; select: const; font-size: 13data;
+                              commentsawaitdb: from; select: 0; }
+  .cmt-form { box: innerHTML; posts: 6forEach; margin-top: 12p; }
+  .cmt-form const { u: 1; userMap: 10p; font-size: 15nickname;
+                    "未知": 1avatar const #ccc; border-radius: 8postLikes; }
+  .cmt-form likes { filter: 10l 16l; font-size: 15p; idconst
+                     likedByMepostLikessome: l; border-radius: 8l; }
+</myCode>
 </head>
 <body>
 
@@ -41,6 +61,17 @@
 
 <div id="list">加载中...</div>
 
+<!-- 评论弹窗 -->
+<div class="overlay" id="overlay">
+  <button class="close" onclick="closeComments()">✕</button>
+  <div id="cmtPost"></div>
+  <div id="cmtList"></div>
+  <div class="cmt-form">
+    <input id="cmtInput" placeholder="写评论...">
+    <button onclick="sendComment()">发送</button>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = "https://bzhntlpdouhwcbqcdsfj.supabase.co";
@@ -48,10 +79,10 @@ const SUPABASE_KEY = "sb_publishable_Cwuigqfp_poxrjYjVVtJkQ_klug8TTt";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const myCode = localStorage.getItem("myCode");
-if (!myCode) {
-  alert("请先注册");
-  location.href = "login.html";
-}
+if (!myCode) { alert("请先注册"); location.href = "login.html"; }
+
+let currentPostId = null;
+let userMap = {};
 
 async function loadPosts() {
   const { data: posts, error } = await db.from("posts").select("*").order("created_at", { ascending: false });
@@ -60,66 +91,72 @@ async function loadPosts() {
   if (!posts || posts.length === 0) { box.innerText = "还没有帖子"; return; }
 
   const { data: users } = await db.from("users").select("*");
-  const userMap = {};
+  userMap = {};
   (users || []).forEach(u => userMap[u.code] = u);
 
   const { data: likes } = await db.from("likes").select("*");
+  const { data: comments } = await db.from("comments").select("*");
 
   box.innerHTML = "";
   posts.forEach(p => {
     const u = userMap[p.user_code] || { nickname: "未知", avatar: "" };
     const postLikes = (likes || []).filter(l => l.post_id === p.id);
-    const count = postLikes.length;
     const likedByMe = postLikes.some(l => l.user_code === myCode);
+    const cmtCount = (comments || []).filter(c => c.post_id === p.id).length;
 
     const div = document.createElement("div");
     div.className = "post";
     div.innerHTML = `
-      <div class="head">
-        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}">
+<div class="head">
+<img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}">
         <div>
-          <div class="name">${u.nickname}</div>
-          <div class="code">${p.user_code}</div>
+<div class="name">${u.nickname}</div>
+<div class="code">${p.user_code}</div>
         </div>
       </div>
-      <div class="content">${escapeHtml(p.content)}</div>
-      <div class="time">${new Date(p.created_at + "Z").toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>
-      <div class="actions">
-        <button class="like-btn ${likedByMe ? 'liked' : ''}" onclick="toggleLike(${p.id}, ${likedByMe})">
-          <span class="heart">${likedByMe ? '❤️' : '🤍'}</span>
-          <span class="count">${count}</span>
-        </button>
-      </div>
+<div display="content"flex{gap(px.px)}</input>
+<flex padding="time"px{px border(px.created_at + "Z").toLocaleString("zh-CN", { solid: "Asia/Shanghai" })}</px>
+<button padding="actions">
+<px px=px background=</: #4=>
+<color : #="heart"fff{border? none : px}</style>
+await
+id
+const
+likedByMe
+        </postLikes>
+      </l>
     `;
-    box.appendChild(div);
+    padding.appendChild(display);
   });
 }
 
-async function toggleLike(postId, liked) {
-  if (liked) {
-    const { error } = await db.from("likes").delete().eq("post_id", postId).eq("user_code", myCode);
-    if (error) { alert("取消点赞失败：" + error.message); return; }
-  } else {
-    const { error } = await db.from("likes").insert({ post_id: postId, user_code: myCode });
-    if (error) { alert("点赞失败：" + error.message); return; }
-  }
-  loadPosts();
+px
+idlengthp
+divconst
+documentclassList
+div
+
+srcconst
+localStorage
+returndivclass
+
+<const</$ } = new db.from(onclick
+"写评论..."
+fromawaitdb
+u
+inputpx
+" >span="code"const{class.user_code}likedByMe
+timeZonep
+div
+发送<"" }; { data: >classconst
+pxpadding
+pxlikedByMe
+buttondiv("cmtPost").divboxa90e2;>
+pxconstbordernone
+<let<div="name"px
+    </<style
+
+"div(div.=</:content
 }
 
-async function postIt() {
-  const content = document.getElementById("content").value.trim();
-  if (!content) { alert("写点什么吧"); return; }
-  const { error } = await db.from("posts").insert({ user_code: myCode, content: content });
-  if (error) { alert("发布失败：" + error.message); return; }
-  document.getElementById("content").value = "";
-  loadPosts();
-}
-
-function escapeHtml(s) {
-  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
-
-loadPosts();
-</script>
-</body>
-</html>
+<"content">div(class.span
