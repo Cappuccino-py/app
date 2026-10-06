@@ -9,7 +9,7 @@
   body { font-family: sans-serif; margin: 0; padding: 12px; background: #fff; }
   h1 { text-align: center; font-size: 20px; margin: 8px 0; }
   .top-bar { display: flex; justify-content: space-between; align-items: center; }
-  .top-bar .gear { font-size: 24px; background: none; border: none; cursor: pointer; }
+  .top-bar .icon-btn { font-size: 22px; background: none; border: none; cursor: pointer; }
   .post-box { background: #fff; padding: 12px; border-radius: 10px;
               margin-bottom: 12px; border: 1px solid #eee; }
   textarea { width: 100%; height: 70px; padding: 10px; font-size: 16px;
@@ -51,7 +51,6 @@
   .cmt-form button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
                      color: #fff; border: none; border-radius: 8px; }
 
-  /* 侧边栏 */
   .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 260px;
              background: #fff; z-index: 20; box-shadow: 2px 0 10px rgba(0,0,0,.1);
              transform: translateX(-100%); transition: .2s; padding: 16px; }
@@ -64,14 +63,34 @@
                         border-bottom: 1px solid #f0f0f0; }
   .mask { position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 15; display: none; }
   .mask.show { display: block; }
+
+  /* 搜索页 */
+  .search-page { position: fixed; inset: 0; background: #fff; z-index: 30;
+                 display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
+  .search-page.show { display: flex; }
+  .search-bar { display: flex; gap: 6px; }
+  .search-bar input { flex: 1; padding: 10px; font-size: 15px;
+                      border: 1px solid #ccc; border-radius: 8px; }
+  .search-bar button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
+                       color: #fff; border: none; border-radius: 8px; }
+  .card { display: flex; align-items: center; gap: 10px; padding: 10px 0;
+          border-bottom: 1px solid #eee; }
+  .card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+  .card .info { flex: 1; }
+  .card .info .name { font-weight: bold; font-size: 15px; }
+  .card .info .code { color: #999; font-size: 12px; }
+  .card button { padding: 6px 12px; font-size: 13px; border: none;
+                 border-radius: 16px; cursor: pointer; }
+  .card .follow { background: #4a90e2; color: #fff; }
+  .card .unfollow { background: #eee; color: #333; }
 </style>
 </head>
 <body>
 
 <div class="top-bar">
-  <button class="gear" onclick="openSidebar()">⚙️</button>
+  <button class="icon-btn" onclick="openSidebar()">⚙️</button>
   <h1 style="flex:1;text-align:center;margin:0;">主页</h1>
-  <div style="width:32px;"></div>
+  <button class="icon-btn" onclick="openSearch()">🔍</button>
 </div>
 
 <div class="post-box">
@@ -101,10 +120,19 @@
     </div>
   </div>
   <div class="menu-item" onclick="alert('发帖功能用下面的框')">发帖</div>
-  <div class="menu-item" onclick="alert('查看我的帖，下一批做')">查看</div>
+  <div class="menu-item" onclick="alert('查看，下一批做')">查看</div>
   <div class="menu-item" onclick="alert('收藏列表，下一批做')">收藏</div>
   <div class="menu-item" onclick="alert('界面切换，下一批做')">界面</div>
   <div class="menu-item" onclick="alert('设置，下一批做')">设置</div>
+</div>
+
+<div class="search-page" id="searchPage">
+  <button class="close" onclick="closeSearch()">✕</button>
+  <div class="search-bar">
+    <input id="searchInput" placeholder="搜名字或编码...">
+    <button onclick="doSearch()">搜索</button>
+  </div>
+  <div id="searchResult"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -118,6 +146,7 @@ if (!myCode) { alert("请先注册"); location.href = "login.html"; }
 
 let currentPostId = null;
 let userMap = {};
+let followingMap = {};
 
 function openSidebar() {
   const me = userMap[myCode] || {};
@@ -130,6 +159,60 @@ function openSidebar() {
 function closeSidebar() {
   document.getElementById("sidebar").classList.remove("show");
   document.getElementById("mask").classList.remove("show");
+}
+
+function openSearch() {
+  document.getElementById("searchPage").classList.add("show");
+}
+function closeSearch() {
+  document.getElementById("searchPage").classList.remove("show");
+}
+
+async function doSearch() {
+  const kw = document.getElementById("searchInput").value.trim();
+  const box = document.getElementById("searchResult");
+  if (!kw) { box.innerHTML = ""; return; }
+  const { data: users } = await db.from("users").select("*");
+  const matched = (users || []).filter(u =>
+    u.nickname.includes(kw) || u.code.includes(kw)
+  ).filter(u => u.code !== myCode);
+
+  if (matched.length === 0) { box.innerHTML = "<p style='color:#999'>没找到</p>"; return; }
+
+  box.innerHTML = "";
+  matched.forEach(u => {
+    const isFollowing = followingMap[u.code];
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}">
+      <div class="info">
+        <div class="name">${u.nickname}</div>
+        <div class="code">${u.code}</div>
+      </div>
+      <button class="${isFollowing ? 'unfollow' : 'follow'}"
+        onclick="toggleFollow('${u.code}', ${!!isFollowing})">
+        ${isFollowing ? '已关注' : '关注'}
+      </button>
+    `;
+    box.appendChild(div);
+  });
+}
+
+async function toggleFollow(targetCode, isFollowing) {
+  if (isFollowing) {
+    await db.from("follows").delete().eq("follower", myCode).eq("following", targetCode);
+  } else {
+    await db.from("follows").insert({ follower: myCode, following: targetCode });
+  }
+  await loadFollows();
+  await doSearch();
+}
+
+async function loadFollows() {
+  const { data } = await db.from("follows").select("*").eq("follower", myCode);
+  followingMap = {};
+  (data || []).forEach(f => followingMap[f.following] = true);
 }
 
 async function loadPosts() {
@@ -299,6 +382,7 @@ function escapeHtml(s) {
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
+loadFollows();
 loadPosts();
 </script>
 </body>
