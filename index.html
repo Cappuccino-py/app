@@ -26,29 +26,29 @@
   .like-btn, .cmt-btn { background: none; border: none; font-size: 15px;
               display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 0; }
   .heart { font-size: 18px; }
-  .like-btn.const .const { dbsupabase}
+  .like-btn.liked .heart { color: #e74c3c; }
 
-  createClient
-  .const { myCode: localStorage; getItem: 0; ifmyCodez-index: 10;
-             alert: "请先注册"; flex-direction: location; href: 12let; overflow-y: currentPostId; }
-  .null.let { userMap: async; }
-  .function .loadPosts { font-size: 22const; data: posts; error: await;
-                    text-align: db; from: 4select; order: ascending; }
-  .cmt-item { false: 10const 0; border-bottom: 1box document #eee; }
-  .cmt-item .getElementById { if: error; align-items: box; innerText: 6"加载失败："; }
-  .cmt-item .error message { return: 28if; posts: 28posts; border-radius: 50%; object-fit: class; }
-  .cmt-item .onclick .openComments { font-size: 14$; font-weight: p; }
-  .cmt-item .id .posts { font-size: 11await; id}
-  .cmt-item .loadPosts { font-size: 15placeholder; margin-top: 4button; }
-  .cmt-item .onclick{sendComment.发送}< { margin-top: 4div; script: div; div: 14script; font-size: 13div; /const> async funct();}
-  .cmt-item .likes await { db: from; select: const; font-size: 13data;
-                              commentsawaitdb: from; select: 0; }
-  .cmt-form { box: innerHTML; posts: 6forEach; margin-top: 12p; }
-  .cmt-form const { u: 1; userMap: 10p; font-size: 15nickname;
-                    "未知": 1avatar const #ccc; border-radius: 8postLikes; }
-  .cmt-form likes { filter: 10l 16l; font-size: 15p; idconst
-                     likedByMepostLikessome: l; border-radius: 8l; }
-</myCode>
+  /* 评论弹窗 */
+  .overlay { position: fixed; inset: 0; background: #fff; z-index: 10;
+             display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
+  .overlay.show { display: flex; }
+  .overlay .close { font-size: 22px; background: none; border: none;
+                    text-align: left; padding: 4px; cursor: pointer; }
+  .cmt-item { padding: 10px 0; border-bottom: 1px solid #eee; }
+  .cmt-item .head { display: flex; align-items: center; gap: 6px; }
+  .cmt-item .head img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+  .cmt-item .head .name { font-size: 14px; font-weight: bold; }
+  .cmt-item .head .code { font-size: 11px; color: #999; }
+  .cmt-item .body { font-size: 15px; margin-top: 4px; }
+  .cmt-item .actions { margin-top: 4px; display: flex; gap: 14px; font-size: 13px; color: #666; }
+  .cmt-item .actions button { background: none; border: none; font-size: 13px;
+                              color: #666; cursor: pointer; padding: 0; }
+  .cmt-form { display: flex; gap: 6px; margin-top: 12px; }
+  .cmt-form input { flex: 1; padding: 10px; font-size: 15px;
+                    border: 1px solid #ccc; border-radius: 8px; }
+  .cmt-form button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
+                     color: #fff; border: none; border-radius: 8px; }
+</style>
 </head>
 <body>
 
@@ -107,56 +107,56 @@ async function loadPosts() {
     const div = document.createElement("div");
     div.className = "post";
     div.innerHTML = `
-<div class="head">
-<img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}">
+      <div class="head">
+        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}">
         <div>
-<div class="name">${u.nickname}</div>
-<div class="code">${p.user_code}</div>
+          <div class="name">${u.nickname}</div>
+          <div class="code">${p.user_code}</div>
         </div>
       </div>
-<div display="content"flex{gap(px.px)}</input>
-<flex padding="time"px{px border(px.created_at + "Z").toLocaleString("zh-CN", { solid: "Asia/Shanghai" })}</px>
-<button padding="actions">
-<px px=px background=</: #4=>
-<color : #="heart"fff{border? none : px}</style>
-await
-id
-const
-likedByMe
-        </postLikes>
-      </l>
+      <div class="content">${escapeHtml(p.content)}</div>
+      <div class="time">${new Date(p.created_at + "Z").toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>
+      <div class="actions">
+        <button class="like-btn ${likedByMe ? 'liked' : ''}" onclick="toggleLike(${p.id}, ${likedByMe})">
+          <span class="heart">${likedByMe ? '❤️' : '🤍'}</span>
+          <span>${postLikes.length}</span>
+        </button>
+        <button class="cmt-btn" onclick="openComments(${p.id})">
+          💬 <span>${cmtCount}</span>
+        </button>
+      </div>
     `;
-    padding.appendChild(display);
+    box.appendChild(div);
   });
 }
 
-px
-idlengthp
-divconst
-documentclassList
-div
-
-srcconst
-localStorage
-returndivclass
-
-<const</$ } = new db.from(onclick
-"写评论..."
-fromawaitdb
-u
-inputpx
-" >span="code"const{class.user_code}likedByMe
-timeZonep
-div
-发送<"" }; { data: >classconst
-pxpadding
-pxlikedByMe
-buttondiv("cmtPost").divboxa90e2;>
-pxconstbordernone
-<let<div="name"px
-    </<style
-
-"div(div.=</:content
+async function toggleLike(postId, liked) {
+  if (liked) await db.from("likes").delete().eq("post_id", postId).eq("user_code", myCode);
+  else await db.from("likes").insert({ post_id: postId, user_code: myCode });
+  loadPosts();
 }
 
-<"content">div(class.span
+async function openComments(postId) {
+  currentPostId = postId;
+  document.getElementById("overlay").classList.add("show");
+
+  // 显示帖子
+  const { data: posts } = await db.from("posts").select("*").eq("id", postId);
+  const p = posts[0];
+  const u = userMap[p.user_code] || { nickname: "未知", avatar: "" };
+  document.getElementById("cmtPost").innerHTML = `
+    <div class="post">
+      <div class="head">
+        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}">
+        <div>
+          <div class="name">${u.nickname}</div>
+          <div class="code">${p.user_code}</div>
+        </div>
+      </div>
+      <div class="content">${escapeHtml(p.content)}</div>
+    </div>`;
+
+  await loadComments();
+}
+
+async funct
