@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>主页</title>
+<style>
+  :root { --bg: #fff; --fg: #000; --card: #fff; --border: #eee; --gray: #999; }
+  .dark { --bg: #111; --fg: #eee; --card: #1c1c1c; --border: #333; --gray: #888; }
+  * { box-sizing: border-box; }
+  body { font-family: sans-serif; margin: 0; padding: 12px; background: var(--bg); color: var(--fg); }
+  h1 { text-align: center; font-size: 20px; margin: 8px 0; }
+  .top-bar { display: flex; justify-content: space-between; align-items: center; }
+  .top-bar .icon-btn { font-size: 22px; background: none; border: none; cursor: pointer; color: var(--fg); }
+  .post-box { background: var(--card); padding: 12px; border-radius: 10px;
+              margin-bottom: 12px; border: 1px solid var(--border); }
+  textarea { width: 100%; height: 70px; padding: 10px; font-size: 16px;
+             border: 1px solid var(--border); border-radius: 8px; resize: none;
+             background: var(--card); color: var(--fg); }
+  button.post-btn { width: 100%; padding: 10px; margin-top: 8px; font-size: 16px;
+                    background: #4a90e2; color: #fff; border: none; border-radius: 8px; }
+  .post { background: var(--card); padding: 12px; border-radius: 10px;
+          margin-bottom: 10px; border: 1px solid var(--border); }
+  .post .head { display: flex; align-items: center; gap: 8px; }
+  .post .head img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+  .post .head .name { font-weight: bold; font-size: 15px; }
+  .post .head .code { color: var(--gray); font-size: 12px; }
+  .post .content { font-size: 16px; line-height: 1.5; margin-top: 8px; white-space: pre-wrap; }
+  .post .content img { max-width: 100%; border-radius: 8px; margin-top: 8px; display: block; }
+  .post .time { font-size: 12px; color: var(--gray); margin-top: 6px; }
+  .post .actions { margin-top: 8px; display: flex; gap: 16px; align-items: center; }
+  .like-btn, .cmt-btn { background: none; border: none; font-size: 15px;
+              display: flex; align-items: center; gap: 4px; cursor: pointer;
+              padding: 0; color: var(--fg); }
+  .heart { font-size: 18px; }
+  .like-btn.liked .heart { color: #e74c3c; }
+  
+.overlay { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 10;
+           display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
+.overlay.show { display: flex; }
+.overlay .close { font-size: 22px; background: none; border: none;
+                  text-align: left; padding: 4px; cursor: pointer; color: var(--fg); }
+.cmt-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.cmt-item .head { display: flex; align-items: center; gap: 6px; }
+.cmt-item .head img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+.cmt-item .head .name { font-size: 14px; font-weight: bold; }
+.cmt-item .head .code { font-size: 11px; color: var(--gray); }
+.cmt-item .body { font-size: 15px; margin-top: 4px; }
+.cmt-item .actions { margin-top: 4px; display: flex; gap: 14px; font-size: 13px; color: var(--gray); }
+.cmt-item .actions button { background: none; border: none; font-size: 13px;
+                            color: var(--gray); cursor: pointer; padding: 0; }
+.cmt-item .actions .liked { color: #e74c3c; }
+.cmt-form { display: flex; gap: 6px; margin-top: 12px; }
+.cmt-form input { flex: 1; padding: 10px; font-size: 15px;
+                  border: 1px solid var(--border); border-radius: 8px;
+                  background: var(--card); color: var(--fg); }
+.cmt-form button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
+                   color: #fff; border: none; border-radius: 8px; }
+
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 260px;
+           background: var(--card); color: var(--fg); z-index: 20;
+           box-shadow: 2px 0 10px rgba(0,0,0,.1);
+           transform: translateX(-100%); transition: .2s; padding: 16px; }
+.sidebar.show { transform: translateX(0); }
+.sidebar .profile { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.sidebar .profile img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+.sidebar .profile .name { font-weight: bold; font-size: 16px; }
+.sidebar .profile .code { color: var(--gray); font-size: 12px; }
+.sidebar .menu-item { padding: 12px 4px; font-size: 16px; cursor: pointer;
+                      border-bottom: 1px solid var(--border); }
+.mask { position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 15; display: none; }
+.mask.show { display: block; }
+
+  .search-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 30;
+                 display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
+  .search-page.show { display: flex; }
+  .search-bar { display: flex; gap: 6px; }
+  .search-bar input { flex: 1; padding: 10px; font-size: 15px;
+                      border: 1px solid var(--border); border-radius: 8px;
+                      background: var(--card); color: var(--fg); }
+  .search-bar button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
+                       color: #fff; border: none; border-radius: 8px; }
+  .card { display: flex; align-items: center; gap: 10px; padding: 10px 0;
+          border-bottom: 1px solid var(--border); }
+  .card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+  .card .info { flex: 1; }
+  .card .info .name { font-weight: bold; font-size: 15px; }
+  .card .info .code { color: var(--gray); font-size: 12px; }
+  .card button { padding: 6px 12px; font-size: 13px; border: none;
+                 border-radius: 16px; cursor: pointer; }
+  .card .follow { background: #4a90e2; color: #fff; }
+  .card .unfollow { background: var(--border); color: var(--fg); }
+
+  .login-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 40;
+                display: none; flex-direction: column; padding: 20px; justify-content: center; }
+  .login-page.show { display: flex; }
+  .login-page h2 { text-align: center; }
+  .login-page input { width: 100%; padding: 12px; font-size: 16px;
+                      border: 1px solid var(--border); border-radius: 8px;
+                      margin-bottom: 12px; background: var(--card); color: var(--fg); }
+  .login-page button { width: 100%; padding: 12px; font-size: 16px; background: #4a90e2;
+                       color: #fff; border: none; border-radius: 8px; }
+  .login-page .link { text-align: center; margin-top: 16px; font-size: 14px; color: #4a90e2; cursor: pointer; }
+
+  .settings-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 45;
+                   display: none; flex-direction: column; padding: 16px; overflow-y: auto; }
+  .settings-page.show { display: flex; }
+  .settings-page label { font-size: 14px; color: var(--gray); margin-top: 12px; display: block; }
+  .settings-page input, .settings-page select, .settings-page textarea {
+    width: 100%; padding: 10px; font-size: 15px;
+    border: 1px solid var(--border); border-radius: 8px; margin-top: 4px;
+    background: var(--card); color: var(--fg);
+  }
+  .settings-page .save-btn { background: #4a90e2; color: #fff; padding: 12px;
+                             border: none; border-radius: 8px; margin-top: 20px; font-size: 16px; }
+</style>
+</head>
+<body>
+  
+<div class="top-bar">
+  <button class="icon-btn" onclick="openSidebar()">⚙️</button>
+  <h1 style="flex:1;text-align:center;margin:0;">主页</h1>
+  <button class="icon-btn" onclick="openSearch()">🔍</button>
+</div>
+
+<div class="post-box">
+  <textarea id="content" placeholder="分享点什么..."></textarea>
+  <input type="file" id="postImage" accept="image/*" style="margin-top:8px;">
+  <button class="post-btn" onclick="postIt()">发布</button>
+</div>
+
+<div id="list">加载中...</div>
+
+<div class="overlay" id="overlay">
+  <button class="close" onclick="closeComments()">✕</button>
+  <div id="cmtPost"></div>
+  <div id="cmtList"></div>
+  <div class="cmt-form">
+    <input id="cmtInput" placeholder="写评论...">
+    <button onclick="sendComment()">发送</button>
+  </div>
+</div>
+
+<div class="mask" id="mask" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="profile">
+    <img id="sideAvatar" src="">
+    <div>
+      <div class="name" id="sideName"></div>
+      <div class="code" id="sideCode"></div>
+    </div>
+  </div>
+  <div class="menu-item" onclick="goHome()">🏠 主页</div>
+  <div class="menu-item" onclick="showMyPosts()">查看</div>
+  <div class="menu-item" onclick="showMyFavs()">收藏</div>
+  <div class="menu-item" onclick="toggleTheme()">界面</div>
+  <div class="menu-item" onclick="openSettings()">设置</div>
+  <div class="menu-item" style="color:#c62828" onclick="logout()">退出登录</div>
+</div>
+
+<div class="search-page" id="searchPage">
+  <button class="close" onclick="closeSearch()">✕</button>
+  <div class="search-bar">
+    <input id="searchInput" placeholder="搜名字或编码...">
+    <button onclick="doSearch()">搜索</button>
+  </div>
+  <div id="searchResult"></div>
+</div>
+
+<div class="login-page" id="loginPage">
+  <h2>登录</h2>
+  <input id="loginCode" placeholder="输入你的编码，如 #5956">
+  <button onclick="doLogin()">登录</button>
+  <div class="link" onclick="location.href='login.html'">没有账号？去注册</div>
+</div>
+
+<div class="settings-page" id="settingsPage">
+  <button class="close" onclick="closeSettings()">✕</button>
+  <h2>设置</h2>
+  <img id="setAvatar" style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;margin:10px auto;">
+  <label>头像（从相册上传）</label>
+  <input type="file" id="setAvatarFile" accept="image/*">
+  <label>名字</label>
+  <input id="setName" maxlength="20">
+  <label>性别</label>
+  <select id="setGender">
+    <option value="">不选</option>
+    <option value="男">男</option>
+    <option value="女">女</option>
+  </select>
+  <label>个人介绍（最多 50 字）</label>
+  <textarea id="setBio" maxlength="50"></textarea>
+  <button class="save-btn" onclick="saveSettings()">保存</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  
+const SUPABASE_URL = "https://bzhntlpdouhwcbqcdsfj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Cwuigqfp_poxrjYjVVtJkQ_klug8TTt";
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let myCode = localStorage.getItem("myCode");
+let currentPostId = null;
+let userMap = {};
+let followingMap = {};
+
+if (localStorage.getItem("theme") === "dark") {
+  document.documentElement.classList.add("dark");
+}
+
+function toggleTheme() {
+  document.documentElement.classList.toggle("dark");
+  const isDark = document.documentElement.classList.contains("dark");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+  closeSidebar();
+}
+
+window.onload = async function() {
+  if (!myCode) {
+    document.getElementById("loginPage").classList.add("show");
+    return;
+  }
+  await startApp();
+};
+
+async function doLogin() {
+  const code = document.getElementById("loginCode").value.trim();
+  if (!code) { alert("请输入编码"); return; }
+  const { data } = await db.from("users").select("*").eq("code", code);
+  if (!data || data.length === 0) { alert("找不到这个编码"); return; }
+  localStorage.setItem("myCode", code);
+  myCode = code;
+  document.getElementById("loginPage").classList.remove("show");
+  await startApp();
+}
+
+function logout() {
+  if (!confirm("确定退出登录？")) return;
+  localStorage.removeItem("myCode");
+  location.reload();
+}
+
+function goHome() {
+  closeSidebar();
+  loadPosts();
+}
+
+async function startApp() {
+  await loadFollows();
+  await loadPosts();
+}
+
+function openSidebar() {
+  const me = userMap[myCode] || {};
+  document.getElementById("sideAvatar").src = me.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect fill='%23ddd' width='50' height='50'/%3E%3C/svg%3E";
+  document.getElementById("sideName").innerText = me.nickname || "未知";
+  document.getElementById("sideCode").innerText = myCode || "";
+  document.getElementById("sidebar").classList.add("show");
+  document.getElementById("mask").classList.add("show");
+}
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("show");
+  document.getElementById("mask").classList.remove("show");
+}
+
+function openSearch() { document.getElementById("searchPage").classList.add("show"); }
+function closeSearch() { document.getElementById("searchPage").classList.remove("show"); }
+
+function openSettings() {
+  closeSidebar();
+  const me = userMap[myCode] || {};
+  document.getElementById("setAvatar").src = me.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect fill='%23ddd' width='80' height='80'/%3E%3C/svg%3E";
+  document.getElementById("setName").value = me.nickname || "";
+  document.getElementById("setGender").value = me.gender || "";
+  document.getElementById("setBio").value = me.bio || "";
+  document.getElementById("settingsPage").classList.add("show");
+}
+function closeSettings() {
+  document.getElementById("settingsPage").classList.remove("show");
+}
+
+document.getElementById("setAvatarFile").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => document.getElementById("setAvatar").src = ev.target.result;
+  reader.readAsDataURL(file);
+});
+
+async function saveSettings() {
+  const nickname = document.getElementById("setName").value.trim();
+  if (!nickname) { alert("名字不能空"); return; }
+  const gender = document.getElementById("setGender").value;
+  const bio = document.getElementById("setBio").value.trim();
+  const avatarEl = document.getElementById("setAvatar");
+  const avatar = avatarEl.src.startsWith("data:image") && avatarEl.src.length > 200
+    ? avatarEl.src : (userMap[myCode]?.avatar || "");
+
+  const { error } = await db.from("users")
+    .update({ nickname, gender, bio, avatar })
+    .eq("code", myCode);
+
+  if (error) { alert("保存失败：" + error.message); return; }
+  alert("保存成功");
+  closeSettings();
+  await loadPosts();
+}
+
+async function doSearch() {
+  const kw = document.getElementById("searchInput").value.trim();
+  const box = document.getElementById("searchResult");
+  if (!kw) { box.innerHTML = ""; return; }
+  const { data: users } = await db.from("users").select("*");
+  const matched = (users || []).filter(u =>
+    u.nickname.includes(kw) || u.code.includes(kw)
+  ).filter(u => u.code !== myCode);
+
+  if (matched.length === 0) { box.innerHTML = "<p style='color:#999'>没找到</p>"; return; }
+  box.innerHTML = "";
+  matched.forEach(u => {
+    const isFollowing = followingMap[u.code];
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}">
+      <div class="info">
+        <div class="name">${u.nickname}</div>
+        <div class="code">${u.code}</div>
+      </div>
+      <button class="${isFollowing ? 'unfollow' : 'follow'}"
+        onclick="toggleFollow('${u.code}', ${!!isFollowing})">
+        ${isFollowing ? '已关注' : '关注'}
+      </button>
+    `;
+    box.appendChild(div);
+  });
+}
+
+async function toggleFollow(targetCode, isFollowing) {
+  if (isFollowing) {
+    await db.from("follows").delete().eq("follower", myCode).eq("following", targetCode);
+  } else {
+    await db.from("follows").insert({ follower: myCode, following: targetCode });
+  }
+  await loadFollows();
+  await doSearch();
+}
+
+async function loadFollows() {
+  const { data } = await db.from("follows").select("*").eq("follower", myCode);
+  followingMap = {};
+  (data || []).forEach(f => followingMap[f.following] = true);
+}
+
+async function loadPosts() {
+  const { data: posts, error } = await db.from("posts").select("*").order("created_at", { ascending: false });
+  const box = document.getElementById("list");
+  if (error) { box.innerText = "加载失败：" + error.message; return; }
+  if (!posts || posts.length === 0) { box.innerText = "还没有帖子"; return; }
+  const { data: users } = await db.from("users").select("*");
+  userMap = {};
+  (users || []).forEach(u => userMap[u.code] = u);
+  await renderPosts(posts);
+}
+
+async function showMyPosts() {
+  closeSidebar();
+  const { data: posts } = await db.from("posts").select("*")
+    .eq("user_code", myCode).order("created_at", { ascending: false });
+  await renderPosts(posts || []);
+}
+
+async function showMyFavs() {
+  closeSidebar();
+  const { data: favs } = await db.from("favorites").select("*").eq("user_code", myCode);
+  const ids = (favs || []).map(f => f.post_id);
+  if (ids.length === 0) { document.getElementById("list").innerText = "还没有收藏"; return; }
+  const { data: posts } = await db.from("posts").select("*")
+    .in("id", ids).order("created_at", { ascending: false });
+  await renderPosts(posts || []);
+}
+
+async function renderPosts(posts) {
+  const box = document.getElementById("list");
+  if (!posts || posts.length === 0) { box.innerText = "没有帖子"; return; }
+  const { data: likes } = await db.from("likes").select("*");
+  const { data: comments } = await db.from("comments").select("*");
+  const { data: favs } = await db.from("favorites").select("*");
+  box.innerHTML = "";
+  posts.forEach(p => {
+    const u = userMap[p.user_code] || { nickname: "未知", avatar: "" };
+    const postLikes = (likes || []).filter(l => l.post_id === p.id);
+    const likedByMe = postLikes.some(l => l.user_code === myCode);
+    const cmtCount = (comments || []).filter(c => c.post_id === p.id).length;
+    const favedByMe = (favs || []).some(f => f.post_id === p.id && f.user_code === myCode);
+    const div = document.createElement("div");
+    div.className = "post";
+    div.innerHTML = `
+      <div class="head">
+        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}">
+        <div>
+          <div class="name">${u.nickname}</div>
+          <div class="code">${p.user_code}</div>
+        </div>
+      </div>
+      <div class="content">${escapeHtml(p.content)}${p.image ? `<img src="${p.image}">` : ""}</div>
+      <div class="time">${new Date(p.created_at + "Z").toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>
+      <div class="actions">
+        <button class="like-btn ${likedByMe ? 'liked' : ''}" onclick="toggleLike(${p.id}, ${likedByMe})">
+          <span class="heart">${likedByMe ? '❤️' : '🤍'}</span>
+          <span>${postLikes.length}</span>
+        </button>
+        <button class="cmt-btn" onclick="openComments(${p.id})">
+          💬 <span>${cmtCount}</span>
+        </button>
+        <button class="cmt-btn" onclick="toggleFav(${p.id}, ${favedByMe})">
+          ${favedByMe ? '⭐' : '☆'}
+        </button>
+        ${p.user_code === myCode ? `<button class="cmt-btn" onclick="delPost(${p.id})">... </button>` : ""}
+      </div>
+    `;
+    box.appendChild(div);
+  });
+}
+
+async function toggleLike(postId, liked) {
+  if (liked) await db.from("likes").delete().eq("post_id", postId).eq("user_code", myCode);
+  else await db.from("likes").insert({ post_id: postId, user_code: myCode });
+  loadPosts();
+}
+
+async function toggleFav(postId, faved) {
+  if (faved) await db.from("favorites").delete().eq("post_id", postId).eq("user_code", myCode);
+  else await db.from("favorites").insert({ post_id: postId, user_code: myCode });
+  loadPosts();
+}
+
+async function openComments(postId) {
+  currentPostId = postId;
+  document.getElementById("overlay").classList.add("show");
+  const { data: posts } = await db.from("posts").select("*").eq("id", postId);
+  const p = posts[0];
+  const u = userMap[p.user_code] || { nickname: "未知", avatar: "" };
+  document.getElementById("cmtPost").innerHTML = `
+    <div class="post">
+      <div class="head">
+        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}">
+        <div>
+          <div class="name">${u.nickname}</div>
+          <div class="code">${p.user_code}</div>
+        </div>
+      </div>
+      <div class="content">${escapeHtml(p.content)}${p.image ? `<img src="${p.image}">` : ""}</div>
+    </div>`;
+  await loadComments();
+}
+
+async function loadComments() {
+  const { data: comments } = await db.from("comments").select("*")
+    .eq("post_id", currentPostId).order("created_at", { ascending: true });
+  const { data: clikes } = await db.from("comment_likes").select("*");
+  const box = document.getElementById("cmtList");
+  if (!comments || comments.length === 0) { box.innerHTML = "<p style='color:#999'>还没有评论</p>"; return; }
+  box.innerHTML = "";
+  comments.forEach(c => {
+    const u = userMap[c.user_code] || { nickname: "未知", avatar: "" };
+    const cLikes = (clikes || []).filter(l => l.comment_id === c.id);
+    const likedByMe = cLikes.some(l => l.user_code === myCode);
+    const div = document.createElement("div");
+    div.className = "cmt-item";
+    div.innerHTML = `
+      <div class="head">
+        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22%3E%3Crect fill=%22%23ddd%22 width=%2228%22 height=%2228%22/%3E%3C/svg%3E'}">
+        <div>
+          <div class="name">${u.nickname}</div>
+          <div class="code">${c.user_code}</div>
+        </div>
+      </div>
+      <div class="body">${escapeHtml(c.content)}</div>
+      <div class="actions">
+        <button class="${likedByMe ? 'liked' : ''}" onclick="toggleCmtLike(${c.id}, ${likedByMe})">
+          ${likedByMe ? '❤️' : '🤍'} ${cLikes.length}
+        </button>
+        ${c.user_code === myCode ? `<button onclick="delComment(${c.id})">删除</button>` : ""}
+      </div>
+    `;
+    box.appendChild(div);
+  });
+}
+
+async function toggleCmtLike(commentId, liked) {
+  if (liked) await db.from("comment_likes").delete().eq("comment_id", commentId).eq("user_code", myCode);
+  else await db.from("comment_likes").insert({ comment_id: commentId, user_code: myCode });
+  await loadComments();
+}
+
+async function sendComment() {
+  const content = document.getElementById("cmtInput").value.trim();
+  if (!content) return;
+  const { error } = await db.from("comments").insert({
+    post_id: currentPostId, user_code: myCode, content: content
+  });
+  if (error) { alert("评论失败：" + error.message); return; }
+  document.getElementById("cmtInput").value = "";
+  await loadComments();
+}
+
+async function delComment(id) {
+  await db.from("comments").delete().eq("id", id);
+  await loadComments();
+}
+
+function closeComments() {
+  document.getElementById("overlay").classList.remove("show");
+  currentPostId = null;
+  loadPosts();
+}
+
+async function delPost(id) {
+  if (!confirm("确定删除这条帖子？")) return;
+  const { error } = await db.from("posts").delete().eq("id", id);
+  if (error) { alert("删除失败：" + error.message); return; }
+  loadPosts();
+}
+
+async function postIt() {
+  const content = document.getElementById("content").value.trim();
+  const fileInput = document.getElementById("postImage");
+  const file = fileInput.files[0];
+  if (!content && !file) { alert("写点什么或选张图"); return; }
+
+  let imageUrl = "";
+  if (file) {
+    const fileName = myCode.replace("#", "") + "_" + Date.now() + "_" + file.name;
+    const { data, error } = await db.storage.from("images").upload(fileName, file);
+    if (error) { alert("图片上传失败：" + error.message); return; }
+    const { data: urlData } = db.storage.from("images").getPublicUrl(fileName);
+    imageUrl = urlData.publicUrl;
+  }
+
+  const { error } = await db.from("posts").insert({
+    user_code: myCode, content: content || " ", image: imageUrl
+  });
+  if (error) { alert("发布失败：" + error.message); return; }
+  document.getElementById("content").value = "";
+  fileInput.value = "";
+  loadPosts();
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+</script>
+</body>
+</html>
