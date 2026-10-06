@@ -22,6 +22,12 @@
   .post .head .code { color: #999; font-size: 12px; }
   .post .content { font-size: 16px; line-height: 1.5; margin-top: 8px; white-space: pre-wrap; }
   .post .time { font-size: 12px; color: #999; margin-top: 6px; }
+  .post .actions { margin-top: 8px; display: flex; gap: 16px; align-items: center; }
+  .like-btn { background: none; border: none; font-size: 15px;
+              display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 0; }
+  .like-btn .heart { font-size: 18px; }
+  .like-btn.liked .heart { color: #e74c3c; }
+  .like-btn .count { color: #333; font-size: 14px; }
 </style>
 </head>
 <body>
@@ -57,9 +63,15 @@ async function loadPosts() {
   const userMap = {};
   (users || []).forEach(u => userMap[u.code] = u);
 
+  const { data: likes } = await db.from("likes").select("*");
+
   box.innerHTML = "";
   posts.forEach(p => {
     const u = userMap[p.user_code] || { nickname: "未知", avatar: "" };
+    const postLikes = (likes || []).filter(l => l.post_id === p.id);
+    const count = postLikes.length;
+    const likedByMe = postLikes.some(l => l.user_code === myCode);
+
     const div = document.createElement("div");
     div.className = "post";
     div.innerHTML = `
@@ -72,9 +84,26 @@ async function loadPosts() {
       </div>
       <div class="content">${escapeHtml(p.content)}</div>
       <div class="time">${new Date(p.created_at + "Z").toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>
+      <div class="actions">
+        <button class="like-btn ${likedByMe ? 'liked' : ''}" onclick="toggleLike(${p.id}, ${likedByMe})">
+          <span class="heart">${likedByMe ? '❤️' : '🤍'}</span>
+          <span class="count">${count}</span>
+        </button>
+      </div>
     `;
     box.appendChild(div);
   });
+}
+
+async function toggleLike(postId, liked) {
+  if (liked) {
+    const { error } = await db.from("likes").delete().eq("post_id", postId).eq("user_code", myCode);
+    if (error) { alert("取消点赞失败：" + error.message); return; }
+  } else {
+    const { error } = await db.from("likes").insert({ post_id: postId, user_code: myCode });
+    if (error) { alert("点赞失败：" + error.message); return; }
+  }
+  loadPosts();
 }
 
 async function postIt() {
