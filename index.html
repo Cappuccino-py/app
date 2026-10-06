@@ -95,10 +95,10 @@
 </style>
 </head>
 <body>
- 
+
 <div class="top-bar">
   <button class="icon-btn" onclick="openSidebar()">⚙️</button>
-  <h1 style="flex:1;text-align:center;margin:0;cursor:pointer;" onclick="loadPosts()">主页</h1>
+  <h1 style="flex:1;text-align:center;margin:0;">主页</h1>
   <button class="icon-btn" onclick="openSearch()">🔍</button>
 </div>
 
@@ -128,11 +128,13 @@
       <div class="code" id="sideCode"></div>
     </div>
   </div>
+  <div class="menu-item" onclick="goHome()">🏠 主页</div>
   <div class="menu-item" onclick="alert('发帖功能用下面的框')">发帖</div>
   <div class="menu-item" onclick="showMyPosts()">查看</div>
   <div class="menu-item" onclick="showMyFavs()">收藏</div>
   <div class="menu-item" onclick="alert('界面切换，下一批做')">界面</div>
   <div class="menu-item" onclick="alert('设置，下一批做')">设置</div>
+  <div class="menu-item" style="color:#c62828" onclick="logout()">退出登录</div>
 </div>
 
 <div class="search-page" id="searchPage">
@@ -181,6 +183,17 @@ async function doLogin() {
   await startApp();
 }
 
+function logout() {
+  if (!confirm("确定退出登录？")) return;
+  localStorage.removeItem("myCode");
+  location.reload();
+}
+
+function goHome() {
+  closeSidebar();
+  loadPosts();
+}
+
 async function startApp() {
   await loadFollows();
   await loadPosts();
@@ -201,7 +214,7 @@ function closeSidebar() {
 
 function openSearch() { document.getElementById("searchPage").classList.add("show"); }
 function closeSearch() { document.getElementById("searchPage").classList.remove("show"); }
-
+ 
 async function doSearch() {
   const kw = document.getElementById("searchInput").value.trim();
   const box = document.getElementById("searchResult");
@@ -247,7 +260,7 @@ async function loadFollows() {
   followingMap = {};
   (data || []).forEach(f => followingMap[f.following] = true);
 }
- 
+
 async function loadPosts() {
   const { data: posts, error } = await db.from("posts").select("*").order("created_at", { ascending: false });
   const box = document.getElementById("list");
@@ -275,7 +288,7 @@ async function showMyFavs() {
     .in("id", ids).order("created_at", { ascending: false });
   await renderPosts(posts || []);
 }
-
+ 
 async function renderPosts(posts) {
   const box = document.getElementById("list");
   if (!posts || posts.length === 0) { box.innerText = "没有帖子"; return; }
@@ -330,7 +343,7 @@ async function toggleFav(postId, faved) {
   else await db.from("favorites").insert({ post_id: postId, user_code: myCode });
   loadPosts();
 }
-
+ 
 async function openComments(postId) {
   currentPostId = postId;
   document.getElementById("overlay").classList.add("show");
