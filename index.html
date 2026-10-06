@@ -64,7 +64,6 @@
   .mask { position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 15; display: none; }
   .mask.show { display: block; }
 
-  /* 搜索页 */
   .search-page { position: fixed; inset: 0; background: #fff; z-index: 30;
                  display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
   .search-page.show { display: flex; }
@@ -120,8 +119,8 @@
     </div>
   </div>
   <div class="menu-item" onclick="alert('发帖功能用下面的框')">发帖</div>
-  <div class="menu-item" onclick="alert('查看，下一批做')">查看</div>
-  <div class="menu-item" onclick="alert('收藏列表，下一批做')">收藏</div>
+  <div class="menu-item" onclick="showMyPosts()">查看</div>
+  <div class="menu-item" onclick="showMyFavs()">收藏</div>
   <div class="menu-item" onclick="alert('界面切换，下一批做')">界面</div>
   <div class="menu-item" onclick="alert('设置，下一批做')">设置</div>
 </div>
@@ -225,10 +224,32 @@ async function loadPosts() {
   userMap = {};
   (users || []).forEach(u => userMap[u.code] = u);
 
+  await renderPosts(posts);
+}
+
+async function showMyPosts() {
+  closeSidebar();
+  const { data: posts } = await db.from("posts").select("*")
+    .eq("user_code", myCode).order("created_at", { ascending: false });
+  await renderPosts(posts || []);
+}
+
+async function showMyFavs() {
+  closeSidebar();
+  const { data: favs } = await db.from("favorites").select("*").eq("user_code", myCode);
+  const ids = (favs || []).map(f => f.post_id);
+  if (ids.length === 0) { document.getElementById("list").innerText = "还没有收藏"; return; }
+  const { data: posts } = await db.from("posts").select("*")
+    .in("id", ids).order("created_at", { ascending: false });
+  await renderPosts(posts || []);
+}
+
+async function renderPosts(posts) {
+  const box = document.getElementById("list");
+  if (!posts || posts.length === 0) { box.innerText = "没有帖子"; return; }
   const { data: likes } = await db.from("likes").select("*");
   const { data: comments } = await db.from("comments").select("*");
   const { data: favs } = await db.from("favorites").select("*");
-
   box.innerHTML = "";
   posts.forEach(p => {
     const u = userMap[p.user_code] || { nickname: "未知", avatar: "" };
@@ -236,7 +257,6 @@ async function loadPosts() {
     const likedByMe = postLikes.some(l => l.user_code === myCode);
     const cmtCount = (comments || []).filter(c => c.post_id === p.id).length;
     const favedByMe = (favs || []).some(f => f.post_id === p.id && f.user_code === myCode);
-
     const div = document.createElement("div");
     div.className = "post";
     div.innerHTML = `
