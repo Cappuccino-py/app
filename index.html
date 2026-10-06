@@ -93,6 +93,7 @@ async function loadPosts() {
 
   const { data: likes } = await db.from("likes").select("*");
   const { data: comments } = await db.from("comments").select("*");
+  const { data: favs } = await db.from("favorites").select("*");
 
   box.innerHTML = "";
   posts.forEach(p => {
@@ -100,6 +101,7 @@ async function loadPosts() {
     const postLikes = (likes || []).filter(l => l.post_id === p.id);
     const likedByMe = postLikes.some(l => l.user_code === myCode);
     const cmtCount = (comments || []).filter(c => c.post_id === p.id).length;
+    const favedByMe = (favs || []).some(f => f.post_id === p.id && f.user_code === myCode);
 
     const div = document.createElement("div");
     div.className = "post";
@@ -121,6 +123,9 @@ async function loadPosts() {
         <button class="cmt-btn" onclick="openComments(${p.id})">
           💬 <span>${cmtCount}</span>
         </button>
+        <button class="cmt-btn" onclick="toggleFav(${p.id}, ${favedByMe})">
+          ${favedByMe ? '⭐' : '☆'}
+        </button>
         ${p.user_code === myCode ? `<button class="cmt-btn" onclick="delPost(${p.id})">... </button>` : ""}
       </div>
     `;
@@ -131,6 +136,12 @@ async function loadPosts() {
 async function toggleLike(postId, liked) {
   if (liked) await db.from("likes").delete().eq("post_id", postId).eq("user_code", myCode);
   else await db.from("likes").insert({ post_id: postId, user_code: myCode });
+  loadPosts();
+}
+
+async function toggleFav(postId, faved) {
+  if (faved) await db.from("favorites").delete().eq("post_id", postId).eq("user_code", myCode);
+  else await db.from("favorites").insert({ post_id: postId, user_code: myCode });
   loadPosts();
 }
  
