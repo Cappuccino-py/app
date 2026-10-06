@@ -41,7 +41,6 @@ const SUPABASE_URL = "https://bzhntlpdouhwcbqcdsfj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Cwuigqfp_poxrjYjVVtJkQ_klug8TTt";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// 拿自己的编码
 const myCode = localStorage.getItem("myCode");
 if (!myCode) {
   alert("请先注册");
@@ -54,7 +53,6 @@ async function loadPosts() {
   if (error) { box.innerText = "加载失败：" + error.message; return; }
   if (!posts || posts.length === 0) { box.innerText = "还没有帖子"; return; }
 
-  // 拿所有用户信息，方便显示头像和名字
   const { data: users } = await db.from("users").select("*");
   const userMap = {};
   (users || []).forEach(u => userMap[u.code] = u);
@@ -73,7 +71,7 @@ async function loadPosts() {
         </div>
       </div>
       <div class="content">${escapeHtml(p.content)}</div>
-      <div class="time">${new Date(p.created_at).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>
+      <div class="time">${new Date(p.created_at + "Z").toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>
     `;
     box.appendChild(div);
   });
