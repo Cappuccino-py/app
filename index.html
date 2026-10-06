@@ -83,6 +83,10 @@
                       background: var(--card); color: var(--fg); }
   .search-bar button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
                        color: #fff; border: none; border-radius: 8px; }
+  .hist-head { display: flex; justify-content: space-between; align-items: center;
+               margin-top: 14px; color: var(--gray); font-size: 13px; }
+  .hist-item { padding: 8px 0; border-bottom: 1px solid var(--border);
+               display: flex; justify-content: space-between; cursor: pointer; }
   .card { display: flex; align-items: center; gap: 10px; padding: 10px 0;
           border-bottom: 1px solid var(--border); }
   .card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
@@ -118,6 +122,8 @@
   }
   .settings-page .save-btn { background: #4a90e2; color: #fff; padding: 12px;
                              border: none; border-radius: 8px; margin-top: 20px; font-size: 16px; }
+  .settings-page .del-btn { background: #c62828; color: #fff; padding: 12px;
+                            border: none; border-radius: 8px; margin-top: 30px; font-size: 16px; }
 
   .messages-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 50;
                    display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
@@ -140,6 +146,7 @@
                  background: #4a90e2; color: #fff; word-break: break-word; }
   .msg.theirs .bubble { background: var(--border); color: var(--fg); }
   .msg .bubble img { max-width: 100%; border-radius: 8px; margin-top: 6px; }
+  .msg .bubble .recall { font-size: 12px; color: var(--gray); font-style: italic; }
   .chat-input { display: flex; gap: 6px; padding: 10px; border-top: 1px solid var(--border); }
   .chat-input input[type=text] { flex: 1; padding: 10px; font-size: 15px;
                                  border: 1px solid var(--border); border-radius: 20px;
@@ -200,6 +207,11 @@
     <input id="searchInput" placeholder="搜名字或编码...">
     <button onclick="doSearch()">搜索</button>
   </div>
+  <div class="hist-head">
+    <span>搜索历史</span>
+    <button style="background:none;border:none;color:var(--gray);cursor:pointer;" onclick="clearHistory()">🗑️ 全部删除</button>
+  </div>
+  <div id="historyList"></div>
   <div id="searchResult"></div>
 </div>
 
@@ -224,9 +236,10 @@
     <option value="男">男</option>
     <option value="女">女</option>
   </select>
-  <label>个人介绍（最多 50 字）</label>
+  <label>个人介绍（最多 50 字，可不填）</label>
   <textarea id="setBio" maxlength="50"></textarea>
   <button class="save-btn" onclick="saveSettings()">保存</button>
+  <button class="del-btn" onclick="deleteAccount()">删除账号</button>
 </div>
 
 <div class="messages-page" id="messagesPage">
@@ -243,6 +256,8 @@
   <div class="chat-head">
     <button onclick="closeChat()">←</button>
     <span id="chatName"></span>
+    <button style="margin-left:auto;font-size:14px;" onclick="unfriend()">删除好友</button>
+    <button style="font-size:14px;color:#c62828;" onclick="blockUser()">拉黑</button>
   </div>
   <div class="chat-body" id="chatBody"></div>
   <div class="chat-input">
@@ -265,11 +280,19 @@ let currentPostId = null;
 let userMap = {};
 let followingMap = {};
 let friendMap = {};
+let blockMap = {};
 let chatTarget = null;
 let chatTimer = null;
+let lastMsgCount = 0;
 
 if (localStorage.getItem("theme") === "dark") {
   document.documentElement.classList.add("dark");
+}
+
+const ding = new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT"); 
+
+function playDing() {
+  try { ding.currentTime = 0; ding.play(); } catch(e) {}
 }
 
 function toggleTheme() {
@@ -314,6 +337,7 @@ async function startApp() {
   await loadFriendData();
   await loadPosts();
   await updateBadge();
+  setInterval(updateBadge, 3000);
 }
 
 function openSidebar() {
@@ -329,7 +353,10 @@ function closeSidebar() {
   document.getElementById("mask").classList.remove("show");
 }
 
-function openSearch() { document.getElementById("searchPage").classList.add("show"); }
+function openSearch() {
+  document.getElementById("searchPage").classList.add("show");
+  loadHistory();
+}
 function closeSearch() { document.getElementById("searchPage").classList.remove("show"); }
 
 function openSettings() {
@@ -370,12 +397,68 @@ async function saveSettings() {
   alert("保存成功");
   closeSettings();
   await loadPosts();
-    }
+}
+
+async function deleteAccount() {
+  if (!confirm("确定删除账号？这会删掉你所有帖子、评论，无法恢复！")) return;
+  if (!confirm("再确认一次：真的要删？")) return;
+  await db.from("posts").delete().eq("user_code", myCode);
+  await db.from("comments").delete().eq("user_code", myCode);
+  await db.from("likes").delete().eq("user_code", myCode);
+  await db.from("favorites").delete().eq("user_code", myCode);
+  await db.from("messages").delete().eq("from_code", myCode);
+  await db.from("messages").delete().eq("to_code", myCode);
+  await db.from("friend_requests").delete().eq("from_code", myCode);
+  await db.from("friend_requests").delete().eq("to_code", myCode);
+  await db.from("follows").delete().eq("follower", myCode);
+  await db.from("follows").delete().eq("following", myCode);
+  await db.from("users").delete().eq("code", myCode);
+  localStorage.removeItem("myCode");
+  alert("已删除");
+  location.href = "login.html";
+  }
   
+async function loadHistory() {
+  const { data } = await db.from("search_history").select("*")
+    .eq("user_code", myCode).order("created_at", { ascending: false }).limit(20);
+  const box = document.getElementById("historyList");
+  if (!data || data.length === 0) { box.innerHTML = ""; return; }
+  const seen = new Set();
+  const uniq = [];
+  data.forEach(d => { if (!seen.has(d.keyword)) { seen.add(d.keyword); uniq.push(d); } });
+  box.innerHTML = "";
+  uniq.forEach(d => {
+    const div = document.createElement("div");
+    div.className = "hist-item";
+    div.innerHTML = `<span onclick="searchAgain('${d.keyword}')">${d.keyword}</span>
+                     <span style="color:#c62828;cursor:pointer;" onclick="delHistory(${d.id})">×</span>`;
+    box.appendChild(div);
+  });
+}
+
+function searchAgain(kw) {
+  document.getElementById("searchInput").value = kw;
+  doSearch();
+}
+
+async function delHistory(id) {
+  await db.from("search_history").delete().eq("id", id);
+  await loadHistory();
+}
+
+async function clearHistory() {
+  if (!confirm("清空搜索历史？")) return;
+  await db.from("search_history").delete().eq("user_code", myCode);
+  await loadHistory();
+}
+
 async function doSearch() {
   const kw = document.getElementById("searchInput").value.trim();
   const box = document.getElementById("searchResult");
   if (!kw) { box.innerHTML = ""; return; }
+  await db.from("search_history").insert({ user_code: myCode, keyword: kw });
+  await loadHistory();
+
   const { data: users } = await db.from("users").select("*");
   const matched = (users || []).filter(u =>
     u.nickname.includes(kw) || u.code.includes(kw)
@@ -387,6 +470,7 @@ async function doSearch() {
     const isFollowing = followingMap[u.code];
     const isFriend = friendMap[u.code];
     const reqSent = friendMap.pending && friendMap.pending[u.code];
+    const blocked = blockMap[u.code];
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
@@ -399,11 +483,13 @@ async function doSearch() {
         onclick="toggleFollow('${u.code}', ${!!isFollowing})">
         ${isFollowing ? '已关注' : '关注'}
       </button>
-      ${isFriend
-        ? `<button class="unfollow" onclick="openChat('${u.code}')">私信</button>`
-        : reqSent
-          ? `<button class="already">已申请</button>`
-          : `<button class="addfriend" onclick="sendFriendReq('${u.code}')">加好友</button>`}
+      ${blocked
+        ? `<button class="already">已拉黑</button>`
+        : isFriend
+          ? `<button class="unfollow" onclick="openChat('${u.code}')">私信</button>`
+          : reqSent
+            ? `<button class="already">已申请</button>`
+            : `<button class="addfriend" onclick="sendFriendReq('${u.code}')">加好友</button>`}
     `;
     box.appendChild(div);
   });
@@ -427,6 +513,7 @@ async function loadFollows() {
 
 async function loadFriendData() {
   friendMap = { pending: {} };
+  blockMap = {};
   const { data: reqs } = await db.from("friend_requests").select("*");
   (reqs || []).forEach(r => {
     if (r.status === "accepted") {
@@ -437,9 +524,12 @@ async function loadFriendData() {
       friendMap.pending[r.to_code] = true;
     }
   });
+  const { data: blocks } = await db.from("blocks").select("*").eq("blocker", myCode);
+  (blocks || []).forEach(b => blockMap[b.blocked] = true);
 }
 
 async function sendFriendReq(targetCode) {
+  if (blockMap[targetCode]) { alert("你已拉黑对方"); return; }
   const { error } = await db.from("friend_requests").insert({
     from_code: myCode, to_code: targetCode, status: "pending"
   });
@@ -456,8 +546,18 @@ async function updateBadge() {
   const badge = document.getElementById("msgBadge");
   if (n > 0) { badge.style.display = "inline-block"; badge.innerText = n; }
   else { badge.style.display = "none"; }
-}
 
+  if (chatTarget) {
+    const { data: msgs } = await db.from("messages").select("*");
+    const count = (msgs || []).filter(m =>
+      (m.from_code === myCode && m.to_code === chatTarget) ||
+      (m.from_code === chatTarget && m.to_code === myCode)
+    ).length;
+    if (count > lastMsgCount && lastMsgCount > 0) playDing();
+    lastMsgCount = count;
+  }
+                       }
+  
 async function loadPosts() {
   const { data: posts, error } = await db.from("posts").select("*").order("created_at", { ascending: false });
   const box = document.getElementById("list");
@@ -484,8 +584,8 @@ async function showMyFavs() {
   const { data: posts } = await db.from("posts").select("*")
     .in("id", ids).order("created_at", { ascending: false });
   await renderPosts(posts || []);
-    }
-  
+}
+
 async function renderPosts(posts) {
   const box = document.getElementById("list");
   if (!posts || posts.length === 0) { box.innerText = "没有帖子"; return; }
@@ -576,6 +676,7 @@ async function loadRequests() {
         <div class="code">${r.from_code}</div>
       </div>
       <button class="addfriend" onclick="acceptReq(${r.id}, '${r.from_code}')">同意</button>
+      <button class="already" onclick="rejectReq(${r.id})">拒绝</button>
     `;
     box.appendChild(div);
   });
@@ -586,6 +687,12 @@ async function acceptReq(id, fromCode) {
   await loadFriendData();
   await loadRequests();
   alert("已同意");
+}
+
+async function rejectReq(id) {
+  await db.from("friend_requests").delete().eq("id", id);
+  await loadRequests();
+  updateBadge();
 }
 
 async function loadChats() {
@@ -615,11 +722,13 @@ async function loadChats() {
   }
   
 async function openChat(targetCode) {
+  if (blockMap[targetCode]) { alert("你已拉黑对方"); return; }
   chatTarget = targetCode;
   closeMessages();
   const u = userMap[targetCode] || { nickname: "未知" };
   document.getElementById("chatName").innerText = u.nickname + " " + targetCode;
   document.getElementById("chatPage").classList.add("show");
+  lastMsgCount = 0;
   await loadChat();
   clearInterval(chatTimer);
   chatTimer = setInterval(loadChat, 2000);
@@ -643,11 +752,20 @@ async function loadChat() {
   body.innerHTML = "";
   msgs.forEach(m => {
     const div = document.createElement("div");
-    div.className = "msg " + (m.from_code === myCode ? "mine" : "theirs");
-    div.innerHTML = `<div class="bubble">${m.content ? escapeHtml(m.content) : ""}${m.image ? `<img src="${m.image}">` : ""}</div>`;
+    const isMine = m.from_code === myCode;
+    const elapsed = (Date.now() - new Date(m.created_at + "Z").getTime()) / 1000;
+    const canRecall = isMine && elapsed < 120;
+    div.className = "msg " + (isMine ? "mine" : "theirs");
+    div.innerHTML = `<div class="bubble" ${canRecall ? `onclick="recallMsg(${m.id})" style="cursor:pointer"` : ""}>${m.content ? escapeHtml(m.content) : ""}${m.image ? `<img src="${m.image}">` : ""}</div>`;
     body.appendChild(div);
   });
   body.scrollTop = body.scrollHeight;
+}
+
+async function recallMsg(id) {
+  if (!confirm("撤回这条消息？（2 分钟内可撤回）")) return;
+  await db.from("messages").delete().eq("id", id);
+  await loadChat();
 }
 
 document.getElementById("chatImage").addEventListener("change", async function(e) {
@@ -672,6 +790,23 @@ async function sendChat() {
   });
   document.getElementById("chatText").value = "";
   await loadChat();
+}
+
+async function unfriend() {
+  if (!confirm("删除这位好友？")) return;
+  await db.from("friend_requests").delete().eq("from_code", myCode).eq("to_code", chatTarget);
+  await db.from("friend_requests").delete().eq("from_code", chatTarget).eq("to_code", myCode);
+  await loadFriendData();
+  closeChat();
+  alert("已删除");
+}
+
+async function blockUser() {
+  if (!confirm("拉黑对方？拉黑后无法互相发消息。")) return;
+  await db.from("blocks").insert({ blocker: myCode, blocked: chatTarget });
+  await loadFriendData();
+  closeChat();
+  alert("已拉黑");
 }
 
 async function openComments(postId) {
