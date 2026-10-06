@@ -3,1002 +3,107 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>主页</title>
+<title>注册</title>
 <style>
-  :root { --bg: #fff; --fg: #000; --card: #fff; --border: #eee; --gray: #999; }
-  .dark { --bg: #111; --fg: #eee; --card: #1c1c1c; --border: #333; --gray: #888; }
   * { box-sizing: border-box; }
-  body { font-family: sans-serif; margin: 0; padding: 12px; background: var(--bg); color: var(--fg); }
-  h1 { text-align: center; font-size: 20px; margin: 8px 0; }
-  .top-bar { display: flex; justify-content: space-between; align-items: center; }
-  .top-bar .icon-btn { font-size: 22px; background: none; border: none; cursor: pointer; color: var(--fg); }
-  .post-box { background: var(--card); padding: 12px; border-radius: 10px;
-              margin-bottom: 12px; border: 1px solid var(--border); }
-  textarea { width: 100%; height: 70px; padding: 10px; font-size: 16px;
-             border: 1px solid var(--border); border-radius: 8px; resize: none;
-             background: var(--card); color: var(--fg); }
-  button.post-btn { width: 100%; padding: 10px; margin-top: 8px; font-size: 16px;
-                    background: #4a90e2; color: #fff; border: none; border-radius: 8px; }
-  .post { background: var(--card); padding: 12px; border-radius: 10px;
-          margin-bottom: 10px; border: 1px solid var(--border); }
-  .post .head { display: flex; align-items: center; gap: 8px; }
-  .post .head img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; cursor: pointer; }
-  .post .head .name { font-weight: bold; font-size: 15px; cursor: pointer; }
-  .post .head .code { color: var(--gray); font-size: 12px; }
-  .post .content { font-size: 16px; line-height: 1.5; margin-top: 8px; white-space: pre-wrap; }
-  .post .content img { max-width: 100%; border-radius: 8px; margin-top: 8px; display: block; }
-  .post .time { font-size: 12px; color: var(--gray); margin-top: 6px; }
-  .post .actions { margin-top: 8px; display: flex; gap: 16px; align-items: center; }
-  .like-btn, .cmt-btn { background: none; border: none; font-size: 15px;
-              display: flex; align-items: center; gap: 4px; cursor: pointer;
-              padding: 0; color: var(--fg); }
-  .heart { font-size: 18px; }
-  .like-btn.liked .heart { color: #e74c3c; }
- 
-.overlay { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 10;
-           display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
-.overlay.show { display: flex; }
-.overlay .close { font-size: 22px; background: none; border: none;
-                  text-align: left; padding: 4px; cursor: pointer; color: var(--fg); }
-.cmt-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
-.cmt-item .head { display: flex; align-items: center; gap: 6px; }
-.cmt-item .head img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
-.cmt-item .head .name { font-size: 14px; font-weight: bold; }
-.cmt-item .head .code { font-size: 11px; color: var(--gray); }
-.cmt-item .body { font-size: 15px; margin-top: 4px; }
-.cmt-item .actions { margin-top: 4px; display: flex; gap: 14px; font-size: 13px; color: var(--gray); }
-.cmt-item .actions button { background: none; border: none; font-size: 13px;
-                            color: var(--gray); cursor: pointer; padding: 0; }
-.cmt-item .actions .liked { color: #e74c3c; }
-.cmt-form { display: flex; gap: 6px; margin-top: 12px; }
-.cmt-form input { flex: 1; padding: 10px; font-size: 15px;
-                  border: 1px solid var(--border); border-radius: 8px;
-                  background: var(--card); color: var(--fg); }
-.cmt-form button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
-                   color: #fff; border: none; border-radius: 8px; }
-
-.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 260px;
-           background: var(--card); color: var(--fg); z-index: 20;
-           box-shadow: 2px 0 10px rgba(0,0,0,.1);
-           transform: translateX(-100%); transition: .2s; padding: 16px; }
-.sidebar.show { transform: translateX(0); }
-.sidebar .profile { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-.sidebar .profile img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
-.sidebar .profile .name { font-weight: bold; font-size: 16px; }
-.sidebar .profile .code { color: var(--gray); font-size: 12px; }
-.sidebar .menu-item { padding: 12px 4px; font-size: 16px; cursor: pointer;
-                      border-bottom: 1px solid var(--border); position: relative; }
-.sidebar .menu-item .badge { position: absolute; right: 8px; top: 12px;
-                             background: #e74c3c; color: #fff; font-size: 11px;
-                             padding: 2px 7px; border-radius: 10px; }
-.mask { position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 15; display: none; }
-.mask.show { display: block; }
-
-.profile-card { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                background: var(--card); color: var(--fg); border-radius: 14px;
-                padding: 20px; z-index: 60; text-align: center; width: 280px;
-                box-shadow: 0 4px 20px rgba(0,0,0,.2); display: none; }
-.profile-card.show { display: block; }
-.profile-card img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; }
-.profile-card .name { font-weight: bold; font-size: 17px; margin-top: 8px; }
-.profile-card .code { color: var(--gray); font-size: 13px; margin-top: 2px; }
-.profile-card .bio { margin-top: 12px; font-size: 14px; line-height: 1.5; color: var(--gray); }
-.profile-card button { margin-top: 16px; padding: 8px 20px; border-radius: 20px;
-                       border: none; background: #4a90e2; color: #fff; cursor: pointer; }
- 
-  .search-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 30;
-                 display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
-  .search-page.show { display: flex; }
-  .search-bar { display: flex; gap: 6px; }
-  .search-bar input { flex: 1; padding: 10px; font-size: 15px;
-                      border: 1px solid var(--border); border-radius: 8px;
-                      background: var(--card); color: var(--fg); }
-  .search-bar button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
-                       color: #fff; border: none; border-radius: 8px; }
-  .hist-head { display: flex; justify-content: space-between; align-items: center;
-               margin-top: 14px; color: var(--gray); font-size: 13px; }
-  .hist-item { padding: 8px 0; border-bottom: 1px solid var(--border);
-               display: flex; justify-content: space-between; cursor: pointer; }
-  .card { display: flex; align-items: center; gap: 10px; padding: 10px 0;
-          border-bottom: 1px solid var(--border); }
-  .card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer; }
-  .card .info { flex: 1; cursor: pointer; }
-  .card .info .name { font-weight: bold; font-size: 15px; }
-  .card .info .code { color: var(--gray); font-size: 12px; }
-  .card button { padding: 6px 10px; font-size: 12px; border: none;
-                 border-radius: 16px; cursor: pointer; margin-left: 4px; }
-  .card .follow { background: #4a90e2; color: #fff; }
-  .card .unfollow { background: var(--border); color: var(--fg); }
-  .card .addfriend { background: #2ecc71; color: #fff; }
-  .card .already { background: var(--border); color: var(--gray); }
-
-  .login-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 40;
-                display: none; flex-direction: column; padding: 20px; justify-content: center; }
-  .login-page.show { display: flex; }
-  .login-page h2 { text-align: center; }
-  .login-page input { width: 100%; padding: 12px; font-size: 16px;
-                      border: 1px solid var(--border); border-radius: 8px;
-                      margin-bottom: 12px; background: var(--card); color: var(--fg); }
-  .login-page button { width: 100%; padding: 12px; font-size: 16px; background: #4a90e2;
-                       color: #fff; border: none; border-radius: 8px; }
-  .login-page .link { text-align: center; margin-top: 16px; font-size: 14px; color: #4a90e2; cursor: pointer; }
-
-  .settings-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 45;
-                   display: none; flex-direction: column; padding: 16px; overflow-y: auto; }
-  .settings-page.show { display: flex; }
-  .settings-page label { font-size: 14px; color: var(--gray); margin-top: 12px; display: block; }
-  .settings-page input, .settings-page select, .settings-page textarea {
-    width: 100%; padding: 10px; font-size: 15px;
-    border: 1px solid var(--border); border-radius: 8px; margin-top: 4px;
-    background: var(--card); color: var(--fg);
-  }
-  .settings-page .save-btn { background: #4a90e2; color: #fff; padding: 12px;
-                             border: none; border-radius: 8px; margin-top: 20px; font-size: 16px; }
-  .settings-page .del-btn { background: #c62828; color: #fff; padding: 12px;
-                            border: none; border-radius: 8px; margin-top: 30px; font-size: 16px; }
-
-  .messages-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 50;
-                   display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
-  .messages-page.show { display: flex; }
-  .messages-page h2 { text-align: center; margin: 8px 0; }
-  .tab-row { display: flex; gap: 6px; margin: 10px 0; }
-  .tab-row div { flex: 1; text-align: center; padding: 8px; border-radius: 8px;
-                 background: var(--border); cursor: pointer; }
-  .tab-row div.active { background: #4a90e2; color: #fff; }
-
-  .chat-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 55;
-               display: none; flex-direction: column; }
-  .chat-page.show { display: flex; }
-  .chat-head { display: flex; align-items: center; gap: 8px; padding: 10px; border-bottom: 1px solid var(--border); }
-  .chat-head button { font-size: 20px; background: none; border: none; cursor: pointer; color: var(--fg); }
-  .chat-body { flex: 1; overflow-y: auto; padding: 10px; }
-  .msg { margin: 6px 0; display: flex; }
-  .msg.mine { justify-content: flex-end; }
-  .msg .bubble { max-width: 70%; padding: 8px 12px; border-radius: 14px;
-                 background: #4a90e2; color: #fff; word-break: break-word; }
-  .msg.theirs .bubble { background: var(--border); color: var(--fg); }
-  .msg .bubble img { max-width: 100%; border-radius: 8px; margin-top: 6px; }
-  .chat-input { display: flex; gap: 6px; padding: 10px; border-top: 1px solid var(--border); }
-  .chat-input input[type=text] { flex: 1; padding: 10px; font-size: 15px;
-                                 border: 1px solid var(--border); border-radius: 20px;
-                                 background: var(--card); color: var(--fg); }
-  .chat-input button { padding: 8px 14px; font-size: 15px; background: #4a90e2;
-                       color: #fff; border: none; border-radius: 20px; }
-  .chat-input label { padding: 8px; font-size: 20px; cursor: pointer; }
-  .chat-input input[type=file] { display: none; }
+  body { font-family: sans-serif; margin: 0; padding: 20px; background: #fff; }
+  h1 { text-align: center; font-size: 22px; }
+  .field { margin-bottom: 16px; }
+  label { display: block; font-size: 14px; color: #555; margin-bottom: 6px; }
+  input, textarea, select { width: 100%; padding: 10px; font-size: 16px;
+                            border: 1px solid #ccc; border-radius: 8px; }
+  textarea { height: 80px; resize: none; }
+  button { width: 100%; padding: 12px; font-size: 16px; background: #4a90e2;
+           color: #fff; border: none; border-radius: 8px; margin-top: 10px; }
+  .avatar-preview { width: 80px; height: 80px; border-radius: 50%;
+                    background: #eee; display: block; margin: 0 auto 10px;
+                    object-fit: cover; }
+  .code { color: #999; font-size: 13px; margin-top: 4px; }
 </style>
 </head>
 <body>
- 
-<div class="top-bar">
-  <button class="icon-btn" onclick="openSidebar()">⚙️</button>
-  <h1 style="flex:1;text-align:center;margin:0;">主页</h1>
-  <button class="icon-btn" onclick="openSearch()">🔍</button>
-</div>
 
-<div class="post-box">
-  <textarea id="content" placeholder="分享点什么..."></textarea>
-  <input type="file" id="postImage" accept="image/*" style="margin-top:8px;">
-  <button class="post-btn" onclick="postIt()">发布</button>
-</div>
+<h1>注册</h1>
 
-<div id="list">加载中...</div>
+<img id="preview" class="avatar-preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect fill='%23ddd' width='80' height='80'/%3E%3C/svg%3E">
 
-<div class="overlay" id="overlay">
-  <button class="close" onclick="closeComments()">✕</button>
-  <div id="cmtPost"></div>
-  <div id="cmtList"></div>
-  <div class="cmt-form">
-    <input id="cmtInput" placeholder="写评论...">
-    <button onclick="sendComment()">发送</button>
-  </div>
-</div>
-
-<div class="mask" id="mask" onclick="closeSidebar()"></div>
-<div class="sidebar" id="sidebar">
-  <div class="profile">
-    <img id="sideAvatar" src="">
-    <div>
-      <div class="name" id="sideName"></div>
-      <div class="code" id="sideCode"></div>
-    </div>
-  </div>
-  <div class="menu-item" onclick="goHome()">🏠 主页</div>
-  <div class="menu-item" onclick="showMyPosts()">查看</div>
-  <div class="menu-item" onclick="showMyFavs()">收藏</div>
-  <div class="menu-item" onclick="toggleTheme()">界面</div>
-  <div class="menu-item" onclick="openSettings()">设置</div>
-  <div class="menu-item" onclick="openMessages()">消息<span id="msgBadge" class="badge" style="display:none">0</span></div>
-  <div class="menu-item" style="color:#c62828" onclick="logout()">退出登录</div>
-</div>
-
-<div class="search-page" id="searchPage">
-  <button class="close" onclick="closeSearch()">✕</button>
-  <div class="search-bar">
-    <input id="searchInput" placeholder="搜名字或编码...">
-    <button onclick="doSearch()">搜索</button>
-  </div>
-  <div class="hist-head">
-    <span>搜索历史</span>
-    <button style="background:none;border:none;color:var(--gray);cursor:pointer;" onclick="clearHistory()">🗑️ 全部删除</button>
-  </div>
-  <div id="historyList"></div>
-  <div id="searchResult"></div>
-</div>
-
-<div class="login-page" id="loginPage">
-  <h2>欢迎</h2>
-  <button onclick="location.href='login.html'" style="margin-bottom:20px">去注册</button>
-  <p style="text-align:center;color:#999;font-size:14px">或</p>
-  <input id="loginCode" placeholder="输入你的编码登录，如 #5956">
-  <button onclick="doLogin()">登录</button>
-</div>
-
-<div class="settings-page" id="settingsPage">
-  <button class="close" onclick="closeSettings()">✕</button>
-  <h2>设置</h2>
-  <img id="setAvatar" style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;margin:10px auto;">
+<div class="field">
   <label>头像（从相册上传）</label>
-  <input type="file" id="setAvatarFile" accept="image/*">
-  <label>名字</label>
-  <input id="setName" maxlength="20">
-  <label>性别</label>
-  <select id="setGender">
+  <input type="file" id="avatar" accept="image/*">
+</div>
+
+<div class="field">
+  <label>名字 *</label>
+  <input type="text" id="nickname" maxlength="20" placeholder="你的昵称">
+</div>
+
+<div class="field">
+  <label>性别（可不选）</label>
+  <select id="gender">
     <option value="">不选</option>
     <option value="男">男</option>
     <option value="女">女</option>
   </select>
+</div>
+
+<div class="field">
   <label>个人介绍（最多 50 字，选填）</label>
-  <textarea id="setBio" maxlength="50"></textarea>
-  <button class="save-btn" onclick="saveSettings()">保存</button>
-  <button class="del-btn" onclick="deleteAccount()">删除账号</button>
+  <textarea id="bio" maxlength="50" placeholder="介绍一下自己..."></textarea>
 </div>
 
-<div class="messages-page" id="messagesPage">
-  <button class="close" onclick="closeMessages()">✕</button>
-  <h2>消息</h2>
-  <div class="tab-row">
-    <div id="tabReq" class="active" onclick="switchMsgTab('req')">好友申请</div>
-    <div id="tabChat" onclick="switchMsgTab('chat')">私信</div>
-  </div>
-  <div id="msgList"></div>
-</div>
+<button onclick="register()">注册</button>
 
-<div class="chat-page" id="chatPage">
-  <div class="chat-head">
-    <button onclick="closeChat()">←</button>
-    <span id="chatName"></span>
-    <button style="margin-left:auto;font-size:14px;" onclick="unfriend()">删除好友</button>
-    <button style="font-size:14px;color:#c62828;" onclick="blockUser()">拉黑</button>
-  </div>
-  <div class="chat-body" id="chatBody"></div>
-  <div class="chat-input">
-    <label for="chatImage">🖼️</label>
-    <input type="file" id="chatImage" accept="image/*">
-    <input type="text" id="chatText" placeholder="说点什么...">
-    <button onclick="sendChat()">发送</button>
-  </div>
-</div>
-
-<div class="profile-card" id="profileCard">
-  <img id="pcAvatar" src="">
-  <div class="name" id="pcName"></div>
-  <div class="code" id="pcCode"></div>
-  <div class="bio" id="pcBio"></div>
-  <button onclick="closeProfile()">关闭</button>
-</div>
+<div id="result"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
- 
 const SUPABASE_URL = "https://bzhntlpdouhwcbqcdsfj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Cwuigqfp_poxrjYjVVtJkQ_klug8TTt";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let myCode = localStorage.getItem("myCode");
-let isAdmin = false;
-let currentPostId = null;
-let userMap = {};
-let followingMap = {};
-let friendMap = {};
-let blockMap = {};
-let chatTarget = null;
-let chatTimer = null;
-let lastMsgCount = 0;
-
-if (localStorage.getItem("theme") === "dark") {
-  document.documentElement.classList.add("dark");
-}
-
-const ding = new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT");
-
-document.addEventListener("click", function once() {
-  ding.volume = 0;
-  ding.play().then(() => { ding.pause(); ding.volume = 1; }).catch(()=>{});
-  document.removeEventListener("click", once);
-}, { once: true });
-
-function playDing() {
-  try { ding.currentTime = 0; ding.play(); } catch(e) {}
-}
-
-function toggleTheme() {
-  document.documentElement.classList.toggle("dark");
-  const isDark = document.documentElement.classList.contains("dark");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-  closeSidebar();
-}
-
-window.onload = async function() {
-  if (!myCode) {
-    document.getElementById("loginPage").classList.add("show");
-    return;
-  }
-  await startApp();
-};
-
-async function doLogin() {
-  const code = document.getElementById("loginCode").value.trim();
-  if (!code) { alert("请输入编码"); return; }
-  const { data } = await db.from("users").select("*").eq("code", code);
-  if (!data || data.length === 0) { alert("找不到这个编码"); return; }
-  localStorage.setItem("myCode", code);
-  myCode = code;
-  document.getElementById("loginPage").classList.remove("show");
-  await startApp();
-}
-
-function logout() {
-  if (!confirm("确定退出登录？")) return;
-  localStorage.removeItem("myCode");
-  location.reload();
-}
-
-function goHome() {
-  closeSidebar();
-  loadPosts();
-}
-
-function showProfile(code) {
-  const u = userMap[code];
-  if (!u) return;
-  document.getElementById("pcAvatar").src = u.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70'%3E%3Crect fill='%23ddd' width='70' height='70'/%3E%3C/svg%3E";
-  document.getElementById("pcName").innerText = u.nickname || "未知";
-  document.getElementById("pcCode").innerText = u.code;
-  document.getElementById("pcBio").innerText = u.bio || "这个人很懒，什么都没写";
-  document.getElementById("profileCard").classList.add("show");
-}
-
-function closeProfile() {
-  document.getElementById("profileCard").classList.remove("show");
-}
-
-async function startApp() {
-  const { data: me } = await db.from("users").select("*").eq("code", myCode);
-  if (me && me[0] && me[0].is_admin) isAdmin = true;
-  await loadFollows();
-  await loadFriendData();
-  await loadPosts();
-  await updateBadge();
-  setInterval(updateBadge, 3000);
-}
-
-function openSidebar() {
-  const me = userMap[myCode] || {};
-  document.getElementById("sideAvatar").src = me.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect fill='%23ddd' width='50' height='50'/%3E%3C/svg%3E";
-  document.getElementById("sideName").innerText = me.nickname || "未知";
-  document.getElementById("sideCode").innerText = myCode || "";
-  document.getElementById("sidebar").classList.add("show");
-  document.getElementById("mask").classList.add("show");
-}
-function closeSidebar() {
-  document.getElementById("sidebar").classList.remove("show");
-  document.getElementById("mask").classList.remove("show");
-}
-
-function openSearch() {
-  document.getElementById("searchPage").classList.add("show");
-  loadHistory();
-}
-function closeSearch() { document.getElementById("searchPage").classList.remove("show"); }
-
-function openSettings() {
-  closeSidebar();
-  const me = userMap[myCode] || {};
-  document.getElementById("setAvatar").src = me.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect fill='%23ddd' width='80' height='80'/%3E%3C/svg%3E";
-  document.getElementById("setName").value = me.nickname || "";
-  document.getElementById("setGender").value = me.gender || "";
-  document.getElementById("setBio").value = me.bio || "";
-  document.getElementById("settingsPage").classList.add("show");
-}
-function closeSettings() {
-  document.getElementById("settingsPage").classList.remove("show");
-}
-
-document.getElementById("setAvatarFile").addEventListener("change", function(e) {
+document.getElementById("avatar").onchange = function(e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = ev => document.getElementById("setAvatar").src = ev.target.result;
+  reader.onload = ev => document.getElementById("preview").src = ev.target.result;
   reader.readAsDataURL(file);
-});
+};
 
-async function saveSettings() {
-  const nickname = document.getElementById("setName").value.trim();
+async function genCode() {
+  for (let i = 0; i < 20; i++) {
+    const code = "#" + Math.floor(1000 + Math.random() * 9000);
+    const { data } = await db.from("users").select("id").eq("code", code);
+    if (!data || data.length === 0) return code;
+  }
+  return "#" + Date.now().toString().slice(-4);
+}
+
+async function register() {
+  const nickname = document.getElementById("nickname").value.trim();
   if (!nickname) { alert("名字不能空"); return; }
-  const gender = document.getElementById("setGender").value;
-  const bio = document.getElementById("setBio").value.trim();
-  const avatarEl = document.getElementById("setAvatar");
+
+  const gender = document.getElementById("gender").value;
+  const bio = document.getElementById("bio").value.trim();
+  const avatarEl = document.getElementById("preview");
   const avatar = avatarEl.src.startsWith("data:image") && avatarEl.src.length > 200
-    ? avatarEl.src : (userMap[myCode]?.avatar || "");
+    ? avatarEl.src : "";
 
-  const { error } = await db.from("users")
-    .update({ nickname, gender, bio, avatar })
-    .eq("code", myCode);
+  const code = await genCode();
 
-  if (error) { alert("保存失败：" + error.message); return; }
-  alert("保存成功");
-  closeSettings();
-  await loadPosts();
-}
-
-async function deleteAccount() {
-  if (!confirm("确定删除账号？这会删掉你所有帖子、评论，无法恢复！")) return;
-  if (!confirm("再确认一次：真的要删？")) return;
-  await db.from("posts").delete().eq("user_code", myCode);
-  await db.from("comments").delete().eq("user_code", myCode);
-  await db.from("likes").delete().eq("user_code", myCode);
-  await db.from("favorites").delete().eq("user_code", myCode);
-  await db.from("messages").delete().eq("from_code", myCode);
-  await db.from("messages").delete().eq("to_code", myCode);
-  await db.from("friend_requests").delete().eq("from_code", myCode);
-  await db.from("friend_requests").delete().eq("to_code", myCode);
-  await db.from("follows").delete().eq("follower", myCode);
-  await db.from("follows").delete().eq("following", myCode);
-  await db.from("users").delete().eq("code", myCode);
-  localStorage.removeItem("myCode");
-  alert("已删除");
-  location.href = "login.html";
- }
- 
-async function loadHistory() {
-  const { data } = await db.from("search_history").select("*")
-    .eq("user_code", myCode).order("created_at", { ascending: false }).limit(20);
-  const box = document.getElementById("historyList");
-  if (!data || data.length === 0) { box.innerHTML = ""; return; }
-  const seen = new Set();
-  const uniq = [];
-  data.forEach(d => { if (!seen.has(d.keyword)) { seen.add(d.keyword); uniq.push(d); } });
-  box.innerHTML = "";
-  uniq.forEach(d => {
-    const div = document.createElement("div");
-    div.className = "hist-item";
-    div.innerHTML = `<span onclick="searchAgain('${d.keyword}')">${d.keyword}</span>
-                     <span style="color:#c62828;cursor:pointer;" onclick="delHistory(${d.id})">×</span>`;
-    box.appendChild(div);
+  const { error } = await db.from("users").insert({
+    code: code, nickname: nickname, gender: gender, bio: bio, avatar: avatar
   });
-}
 
-function searchAgain(kw) {
-  document.getElementById("searchInput").value = kw;
-  doSearch();
-}
+  if (error) { alert("注册失败：" + error.message); return; }
 
-async function delHistory(id) {
-  await db.from("search_history").delete().eq("id", id);
-  await loadHistory();
-}
-
-async function clearHistory() {
-  if (!confirm("清空搜索历史？")) return;
-  await db.from("search_history").delete().eq("user_code", myCode);
-  await loadHistory();
-}
-
-async function doSearch() {
-  const kw = document.getElementById("searchInput").value.trim();
-  const box = document.getElementById("searchResult");
-  if (!kw) { box.innerHTML = ""; return; }
-  await db.from("search_history").insert({ user_code: myCode, keyword: kw });
-  await loadHistory();
-
-  const { data: users } = await db.from("users").select("*");
-  const matched = (users || []).filter(u =>
-    u.nickname.includes(kw) || u.code.includes(kw)
-  ).filter(u => u.code !== myCode);
-
-  if (matched.length === 0) { box.innerHTML = "<p style='color:#999'>没找到</p>"; return; }
-  box.innerHTML = "";
-  matched.forEach(u => {
-    const isFollowing = followingMap[u.code];
-    const isFriend = friendMap[u.code];
-    const reqSent = friendMap.pending && friendMap.pending[u.code];
-    const blocked = blockMap[u.code];
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}" onclick="showProfile('${u.code}')">
-      <div class="info" onclick="showProfile('${u.code}')">
-        <div class="name">${u.nickname}</div>
-        <div class="code">${u.code}</div>
-      </div>
-      <button class="${isFollowing ? 'unfollow' : 'follow'}"
-        onclick="toggleFollow('${u.code}', ${!!isFollowing})">
-        ${isFollowing ? '已关注' : '关注'}
-      </button>
-      ${blocked
-        ? `<button class="already">已拉黑</button>`
-        : isFriend
-          ? `<button class="unfollow" onclick="openChat('${u.code}')">私信</button>`
-          : reqSent
-            ? `<button class="already">已申请</button>`
-            : `<button class="addfriend" onclick="sendFriendReq('${u.code}')">加好友</button>`}
-    `;
-    box.appendChild(div);
-  });
-}
-
-async function toggleFollow(targetCode, isFollowing) {
-  if (isFollowing) {
-    await db.from("follows").delete().eq("follower", myCode).eq("following", targetCode);
-  } else {
-    await db.from("follows").insert({ follower: myCode, following: targetCode });
-  }
-  await loadFollows();
-  await doSearch();
-}
-
-async function loadFollows() {
-  const { data } = await db.from("follows").select("*").eq("follower", myCode);
-  followingMap = {};
-  (data || []).forEach(f => followingMap[f.following] = true);
-}
-
-async function loadFriendData() {
-  friendMap = { pending: {} };
-  blockMap = {};
-  const { data: reqs } = await db.from("friend_requests").select("*");
-  (reqs || []).forEach(r => {
-    if (r.status === "accepted") {
-      if (r.from_code === myCode) friendMap[r.to_code] = true;
-      if (r.to_code === myCode) friendMap[r.from_code] = true;
-    }
-    if (r.status === "pending" && r.from_code === myCode) {
-      friendMap.pending[r.to_code] = true;
-    }
-  });
-  const { data: blocks } = await db.from("blocks").select("*").eq("blocker", myCode);
-  (blocks || []).forEach(b => blockMap[b.blocked] = true);
-}
-
-async function sendFriendReq(targetCode) {
-  if (blockMap[targetCode]) { alert("你已拉黑对方"); return; }
-  const { error } = await db.from("friend_requests").insert({
-    from_code: myCode, to_code: targetCode, status: "pending"
-  });
-  if (error) { alert("申请失败：" + error.message); return; }
-  alert("申请已发送");
-  await loadFriendData();
-  await doSearch();
-}
-
-async function updateBadge() {
-  const { data } = await db.from("friend_requests").select("*")
-    .eq("to_code", myCode).eq("status", "pending");
-  const n = (data || []).length;
-  const badge = document.getElementById("msgBadge");
-  if (n > 0) { badge.style.display = "inline-block"; badge.innerText = n; }
-  else { badge.style.display = "none"; }
-
-  if (chatTarget) {
-    const { data: msgs } = await db.from("messages").select("*");
-    const count = (msgs || []).filter(m =>
-      (m.from_code === myCode && m.to_code === chatTarget) ||
-      (m.from_code === chatTarget && m.to_code === myCode)
-    ).length;
-    if (count > lastMsgCount && lastMsgCount > 0) playDing();
-    lastMsgCount = count;
-  }
-   }
- 
-async function loadPosts() {
-  const { data: posts, error } = await db.from("posts").select("*").order("created_at", { ascending: false });
-  const box = document.getElementById("list");
-  if (error) { box.innerText = "加载失败：" + error.message; return; }
-  if (!posts || posts.length === 0) { box.innerText = "还没有帖子"; return; }
-  const { data: users } = await db.from("users").select("*");
-  userMap = {};
-  (users || []).forEach(u => userMap[u.code] = u);
-  await renderPosts(posts);
-}
-
-async function showMyPosts() {
-  closeSidebar();
-  const { data: posts } = await db.from("posts").select("*")
-    .eq("user_code", myCode).order("created_at", { ascending: false });
-  await renderPosts(posts || []);
-}
-
-async function showMyFavs() {
-  closeSidebar();
-  const { data: favs } = await db.from("favorites").select("*").eq("user_code", myCode);
-  const ids = (favs || []).map(f => f.post_id);
-  if (ids.length === 0) { document.getElementById("list").innerText = "还没有收藏"; return; }
-  const { data: posts } = await db.from("posts").select("*")
-    .in("id", ids).order("created_at", { ascending: false });
-  await renderPosts(posts || []);
-}
-
-async function renderPosts(posts) {
-  const box = document.getElementById("list");
-  if (!posts || posts.length === 0) { box.innerText = "没有帖子"; return; }
-  const { data: likes } = await db.from("likes").select("*");
-  const { data: comments } = await db.from("comments").select("*");
-  const { data: favs } = await db.from("favorites").select("*");
-  box.innerHTML = "";
-  posts.forEach(p => {
-    const u = userMap[p.user_code] || { nickname: "未知", avatar: "" };
-    const postLikes = (likes || []).filter(l => l.post_id === p.id);
-    const likedByMe = postLikes.some(l => l.user_code === myCode);
-    const cmtCount = (comments || []).filter(c => c.post_id === p.id).length;
-    const favedByMe = (favs || []).some(f => f.post_id === p.id && f.user_code === myCode);
-    const canDel = p.user_code === myCode || isAdmin;
-    const div = document.createElement("div");
-    div.className = "post";
-    div.innerHTML = `
-      <div class="head">
-        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}" onclick="showProfile('${p.user_code}')">
-        <div>
-          <div class="name" onclick="showProfile('${p.user_code}')">${u.nickname}</div>
-          <div class="code">${p.user_code}</div>
-        </div>
-      </div>
-      <div class="content">${escapeHtml(p.content)}${p.image ? `<img src="${p.image}">` : ""}</div>
-      <div class="time">${new Date(p.created_at + "Z").toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>
-      <div class="actions">
-        <button class="like-btn ${likedByMe ? 'liked' : ''}" onclick="toggleLike(${p.id}, ${likedByMe})">
-          <span class="heart">${likedByMe ? '❤️' : '🤍'}</span>
-          <span>${postLikes.length}</span>
-        </button>
-        <button class="cmt-btn" onclick="openComments(${p.id})">
-          💬 <span>${cmtCount}</span>
-        </button>
-        <button class="cmt-btn" onclick="toggleFav(${p.id}, ${favedByMe})">
-          ${favedByMe ? '⭐' : '☆'}
-        </button>
-        ${canDel ? `<button class="cmt-btn" onclick="delPost(${p.id})">... </button>` : ""}
-      </div>
-    `;
-    box.appendChild(div);
-  });
-}
-
-async function toggleLike(postId, liked) {
-  if (liked) await db.from("likes").delete().eq("post_id", postId).eq("user_code", myCode);
-  else await db.from("likes").insert({ post_id: postId, user_code: myCode });
-  loadPosts();
-}
-
-async function toggleFav(postId, faved) {
-  if (faved) await db.from("favorites").delete().eq("post_id", postId).eq("user_code", myCode);
-  else await db.from("favorites").insert({ post_id: postId, user_code: myCode });
-  loadPosts();
-}
-
-function openMessages() {
-  closeSidebar();
-  document.getElementById("messagesPage").classList.add("show");
-  switchMsgTab("req");
-}
-
-function closeMessages() {
-  document.getElementById("messagesPage").classList.remove("show");
-  updateBadge();
-}
-
-function switchMsgTab(tab) {
-  document.getElementById("tabReq").classList.toggle("active", tab === "req");
-  document.getElementById("tabChat").classList.toggle("active", tab === "chat");
-  if (tab === "req") loadRequests();
-  else loadChats();
-}
-
-async function loadRequests() {
-  const box = document.getElementById("msgList");
-  const { data } = await db.from("friend_requests").select("*")
-    .eq("to_code", myCode).eq("status", "pending");
-  if (!data || data.length === 0) { box.innerHTML = "<p style='color:#999'>暂无好友申请</p>"; return; }
-  box.innerHTML = "";
-  data.forEach(r => {
-    const u = userMap[r.from_code] || { nickname: "未知", avatar: "" };
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}">
-      <div class="info">
-        <div class="name">${u.nickname}</div>
-        <div class="code">${r.from_code}</div>
-      </div>
-      <button class="addfriend" onclick="acceptReq(${r.id}, '${r.from_code}')">同意</button>
-      <button class="already" onclick="rejectReq(${r.id})">拒绝</button>
-    `;
-    box.appendChild(div);
-  });
-}
-
-async function acceptReq(id, fromCode) {
-  await db.from("friend_requests").update({ status: "accepted" }).eq("id", id);
-  await loadFriendData();
-  await loadRequests();
-  alert("已同意");
-}
-
-async function rejectReq(id) {
-  await db.from("friend_requests").delete().eq("id", id);
-  await loadRequests();
-  updateBadge();
-}
-
-async function loadChats() {
-  const box = document.getElementById("msgList");
-  const { data } = await db.from("messages").select("*");
-  const partners = new Set();
-  (data || []).forEach(m => {
-    if (m.from_code === myCode) partners.add(m.to_code);
-    if (m.to_code === myCode) partners.add(m.from_code);
-  });
-  if (partners.size === 0) { box.innerHTML = "<p style='color:#999'>暂无私信</p>"; return; }
-  box.innerHTML = "";
-  partners.forEach(code => {
-    const u = userMap[code] || { nickname: "未知", avatar: "" };
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}">
-      <div class="info">
-        <div class="name">${u.nickname}</div>
-        <div class="code">${code}</div>
-      </div>
-      <button class="follow" onclick="openChat('${code}')">聊天</button>
-    `;
-    box.appendChild(div);
-  });
-}
- 
-async function openChat(targetCode) {
-  if (blockMap[targetCode]) { alert("你已拉黑对方"); return; }
-  chatTarget = targetCode;
-  closeMessages();
-  const u = userMap[targetCode] || { nickname: "未知" };
-  document.getElementById("chatName").innerText = u.nickname + " " + targetCode;
-  document.getElementById("chatPage").classList.add("show");
-  lastMsgCount = 0;
-  await loadChat();
-  clearInterval(chatTimer);
-  chatTimer = setInterval(loadChat, 2000);
-}
-
-function closeChat() {
-  document.getElementById("chatPage").classList.remove("show");
-  clearInterval(chatTimer);
-  chatTarget = null;
-}
-
-async function loadChat() {
-  if (!chatTarget) return;
-  const { data } = await db.from("messages").select("*");
-  const msgs = (data || []).filter(m =>
-    (m.from_code === myCode && m.to_code === chatTarget) ||
-    (m.from_code === chatTarget && m.to_code === myCode)
-  ).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
-  const body = document.getElementById("chatBody");
-  body.innerHTML = "";
-  msgs.forEach(m => {
-    const div = document.createElement("div");
-    const isMine = m.from_code === myCode;
-    const elapsed = (Date.now() - new Date(m.created_at + "Z").getTime()) / 1000;
-    const canRecall = isMine && elapsed < 120;
-    div.className = "msg " + (isMine ? "mine" : "theirs");
-    div.innerHTML = `<div class="bubble" ${canRecall ? `onclick="recallMsg(${m.id})" style="cursor:pointer"` : ""}>${m.content ? escapeHtml(m.content) : ""}${m.image ? `<img src="${m.image}">` : ""}</div>`;
-    body.appendChild(div);
-  });
-  body.scrollTop = body.scrollHeight;
-}
-
-async function recallMsg(id) {
-  if (!confirm("撤回这条消息？（2 分钟内可撤回）")) return;
-  await db.from("messages").delete().eq("id", id);
-  await loadChat();
-}
-
-document.getElementById("chatImage").addEventListener("change", async function(e) {
-  const file = e.target.files[0];
-  if (!file || !chatTarget) return;
-  const fileName = "chat_" + Date.now() + "_" + file.name;
-  const { error } = await db.storage.from("images").upload(fileName, file);
-  if (error) { alert("图片上传失败：" + error.message); return; }
-  const { data: urlData } = db.storage.from("images").getPublicUrl(fileName);
-  await db.from("messages").insert({
-    from_code: myCode, to_code: chatTarget, content: "", image: urlData.publicUrl
-  });
-  e.target.value = "";
-  await loadChat();
-});
-
-async function sendChat() {
-  const text = document.getElementById("chatText").value.trim();
-  if (!text || !chatTarget) return;
-  await db.from("messages").insert({
-    from_code: myCode, to_code: chatTarget, content: text, image: ""
-  });
-  document.getElementById("chatText").value = "";
-  await loadChat();
-}
-
-async function unfriend() {
-  if (!confirm("删除这位好友？")) return;
-  await db.from("friend_requests").delete().eq("from_code", myCode).eq("to_code", chatTarget);
-  await db.from("friend_requests").delete().eq("from_code", chatTarget).eq("to_code", myCode);
-  await loadFriendData();
-  closeChat();
-  alert("已删除");
-}
-
-async function blockUser() {
-  if (!confirm("拉黑对方？拉黑后无法互相发消息。")) return;
-  await db.from("blocks").insert({ blocker: myCode, blocked: chatTarget });
-  await loadFriendData();
-  closeChat();
-  alert("已拉黑");
-}
-
-async function openComments(postId) {
-  currentPostId = postId;
-  document.getElementById("overlay").classList.add("show");
-  const { data: posts } = await db.from("posts").select("*").eq("id", postId);
-  const p = posts[0];
-  const u = userMap[p.user_code] || { nickname: "未知", avatar: "" };
-  document.getElementById("cmtPost").innerHTML = `
-    <div class="post">
-      <div class="head">
-        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}" onclick="showProfile('${p.user_code}')">
-        <div>
-          <div class="name" onclick="showProfile('${p.user_code}')">${u.nickname}</div>
-          <div class="code">${p.user_code}</div>
-        </div>
-      </div>
-      <div class="content">${escapeHtml(p.content)}${p.image ? `<img src="${p.image}">` : ""}</div>
-    </div>`;
-  await loadComments();
-}
-
-async function loadComments() {
-  const { data: comments } = await db.from("comments").select("*")
-    .eq("post_id", currentPostId).order("created_at", { ascending: true });
-  const { data: clikes } = await db.from("comment_likes").select("*");
-  const box = document.getElementById("cmtList");
-  if (!comments || comments.length === 0) { box.innerHTML = "<p style='color:#999'>还没有评论</p>"; return; }
-  box.innerHTML = "";
-  comments.forEach(c => {
-    const u = userMap[c.user_code] || { nickname: "未知", avatar: "" };
-    const cLikes = (clikes || []).filter(l => l.comment_id === c.id);
-    const likedByMe = cLikes.some(l => l.user_code === myCode);
-    const canDel = c.user_code === myCode || isAdmin;
-    const div = document.createElement("div");
-    div.className = "cmt-item";
-    div.innerHTML = `
-      <div class="head">
-        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22%3E%3Crect fill=%22%23ddd%22 width=%2228%22 height=%2228%22/%3E%3C/svg%3E'}">
-        <div>
-          <div class="name">${u.nickname}</div>
-          <div class="code">${c.user_code}</div>
-        </div>
-      </div>
-      <div class="body">${escapeHtml(c.content)}</div>
-      <div class="actions">
-        <button class="${likedByMe ? 'liked' : ''}" onclick="toggleCmtLike(${c.id}, ${likedByMe})">
-          ${likedByMe ? '❤️' : '🤍'} ${cLikes.length}
-        </button>
-        ${canDel ? `<button onclick="delComment(${c.id})">删除</button>` : ""}
-      </div>
-    `;
-    box.appendChild(div);
-  });
-}
-
-async function toggleCmtLike(commentId, liked) {
-  if (liked) await db.from("comment_likes").delete().eq("comment_id", commentId).eq("user_code", myCode);
-  else await db.from("comment_likes").insert({ comment_id: commentId, user_code: myCode });
-  await loadComments();
-}
-
-async function sendComment() {
-  const content = document.getElementById("cmtInput").value.trim();
-  if (!content) return;
-  const { error } = await db.from("comments").insert({
-    post_id: currentPostId, user_code: myCode, content: content
-  });
-  if (error) { alert("评论失败：" + error.message); return; }
-  document.getElementById("cmtInput").value = "";
-  await loadComments();
-}
-
-async function delComment(id) {
-  await db.from("comments").delete().eq("id", id);
-  await loadComments();
-}
-
-function closeComments() {
-  document.getElementById("overlay").classList.remove("show");
-  currentPostId = null;
-  loadPosts();
-}
-
-async function delPost(id) {
-  if (!confirm("确定删除这条帖子？")) return;
-  const { error } = await db.from("posts").delete().eq("id", id);
-  if (error) { alert("删除失败：" + error.message); return; }
-  loadPosts();
-}
-
-async function postIt() {
-  const content = document.getElementById("content").value.trim();
-  const fileInput = document.getElementById("postImage");
-  const file = fileInput.files[0];
-  if (!content) return;
-  const { error } = await db.from("comments").insert({
-    post_id: currentPostId, user_code: myCode, content: content
-  });
-  if (error) { alert("评论失败：" + error.message); return; }
-  document.getElementById("cmtInput").value = "";
-  await loadComments();
-}
-
-async function delComment(id) {
-  await db.from("comments").delete().eq("id", id);
-  await loadComments();
-}
-
-function closeComments() {
-  document.getElementById("overlay").classList.remove("show");
-  currentPostId = null;
-  loadPosts();
-}
-
-async function delPost(id) {
-  if (!confirm("确定删除这条帖子？")) return;
-  const { error } = await db.from("posts").delete().eq("id", id);
-  if (error) { alert("删除失败：" + error.message); return; }
-  loadPosts();
-}
-
-async function postIt() {
-  const content = document.getElementById("content").value.trim();
-  const fileInput = document.getElementById("postImage");
-  const file = fileInput.files[0];
-  if (!content && !file) { alert("写点什么或选张图"); return; }
-
-  let imageUrl = "";
-  if (file) {
-    const fileName = myCode.replace("#", "") + "_" + Date.now() + "_" + file.name;
-    const { data, error } = await db.storage.from("images").upload(fileName, file);
-    if (error) { alert("图片上传失败：" + error.message); return; }
-    const { data: urlData } = db.storage.from("images").getPublicUrl(fileName);
-    imageUrl = urlData.publicUrl;
-  }
-
-  const { error } = await db.from("posts").insert({
-    user_code: myCode, content: content || " ", image: imageUrl
-  });
-  if (error) { alert("发布失败：" + error.message); return; }
-  document.getElementById("content").value = "";
-  fileInput.value = "";
-  loadPosts();
-}
-
-function escapeHtml(s) {
-  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  localStorage.setItem("myCode", code);
+  document.getElementById("result").innerHTML =
+    `<div style="margin-top:20px;text-align:center">
+       ✅ 注册成功！<br>
+       你的编码：<b>${code}</b><br>
+       <span class="code">记住它，别人靠这个找你</span><br><br>
+       <a href="index.html">进入主页</a>
+     </div>`;
 }
 </script>
 </body>
