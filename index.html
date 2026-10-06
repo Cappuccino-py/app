@@ -22,8 +22,8 @@
   .post { background: var(--card); padding: 12px; border-radius: 10px;
           margin-bottom: 10px; border: 1px solid var(--border); }
   .post .head { display: flex; align-items: center; gap: 8px; }
-  .post .head img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
-  .post .head .name { font-weight: bold; font-size: 15px; }
+  .post .head img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; cursor: pointer; }
+  .post .head .name { font-weight: bold; font-size: 15px; cursor: pointer; }
   .post .head .code { color: var(--gray); font-size: 12px; }
   .post .content { font-size: 16px; line-height: 1.5; margin-top: 8px; white-space: pre-wrap; }
   .post .content img { max-width: 100%; border-radius: 8px; margin-top: 8px; display: block; }
@@ -42,8 +42,8 @@
                   text-align: left; padding: 4px; cursor: pointer; color: var(--fg); }
 .cmt-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
 .cmt-item .head { display: flex; align-items: center; gap: 6px; }
-.cmt-item .head img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
-.cmt-item .head .name { font-size: 14px; font-weight: bold; }
+.cmt-item .head img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; cursor: pointer; }
+.cmt-item .head .name { font-size: 14px; font-weight: bold; cursor: pointer; }
 .cmt-item .head .code { font-size: 11px; color: var(--gray); }
 .cmt-item .body { font-size: 15px; margin-top: 4px; }
 .cmt-item .actions { margin-top: 4px; display: flex; gap: 14px; font-size: 13px; color: var(--gray); }
@@ -74,66 +74,65 @@
 .mask { position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 15; display: none; }
 .mask.show { display: block; }
   
-  .search-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 30;
+.search-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 30;
+               display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
+.search-page.show { display: flex; }
+.search-bar { display: flex; gap: 6px; }
+.search-bar input { flex: 1; padding: 10px; font-size: 15px;
+                    border: 1px solid var(--border); border-radius: 8px;
+                    background: var(--card); color: var(--fg); }
+.search-bar button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
+                     color: #fff; border: none; border-radius: 8px; }
+.hist-head { display: flex; justify-content: space-between; align-items: center;
+             margin-top: 14px; color: var(--gray); font-size: 13px; }
+.hist-item { padding: 8px 0; border-bottom: 1px solid var(--border);
+             display: flex; justify-content: space-between; cursor: pointer; }
+.card { display: flex; align-items: center; gap: 10px; padding: 10px 0;
+        border-bottom: 1px solid var(--border); }
+.card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer; }
+.card .info { flex: 1; cursor: pointer; }
+.card .info .name { font-weight: bold; font-size: 15px; }
+.card .info .code { color: var(--gray); font-size: 12px; }
+.card button { padding: 6px 10px; font-size: 12px; border: none;
+               border-radius: 16px; cursor: pointer; margin-left: 4px; }
+.card .follow { background: #4a90e2; color: #fff; }
+.card .unfollow { background: var(--border); color: var(--fg); }
+.card .addfriend { background: #2ecc71; color: #fff; }
+.card .already { background: var(--border); color: var(--gray); }
+
+.login-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 40;
+              display: none; flex-direction: column; padding: 20px; justify-content: center; }
+.login-page.show { display: flex; }
+.login-page h2 { text-align: center; }
+.login-page input { width: 100%; padding: 12px; font-size: 16px;
+                    border: 1px solid var(--border); border-radius: 8px;
+                    margin-bottom: 12px; background: var(--card); color: var(--fg); }
+.login-page button { width: 100%; padding: 12px; font-size: 16px; background: #4a90e2;
+                     color: #fff; border: none; border-radius: 8px; }
+
+.settings-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 45;
+                 display: none; flex-direction: column; padding: 16px; overflow-y: auto; }
+.settings-page.show { display: flex; }
+.settings-page label { font-size: 14px; color: var(--gray); margin-top: 12px; display: block; }
+.settings-page input, .settings-page select, .settings-page textarea {
+  width: 100%; padding: 10px; font-size: 15px;
+  border: 1px solid var(--border); border-radius: 8px; margin-top: 4px;
+  background: var(--card); color: var(--fg);
+}
+.settings-page .save-btn { background: #4a90e2; color: #fff; padding: 12px;
+                           border: none; border-radius: 8px; margin-top: 20px; font-size: 16px; }
+.settings-page .del-btn { background: #c62828; color: #fff; padding: 12px;
+                          border: none; border-radius: 8px; margin-top: 30px; font-size: 16px; }
+
+.messages-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 50;
                  display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
-  .search-page.show { display: flex; }
-  .search-bar { display: flex; gap: 6px; }
-  .search-bar input { flex: 1; padding: 10px; font-size: 15px;
-                      border: 1px solid var(--border); border-radius: 8px;
-                      background: var(--card); color: var(--fg); }
-  .search-bar button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
-                       color: #fff; border: none; border-radius: 8px; }
-  .hist-head { display: flex; justify-content: space-between; align-items: center;
-               margin-top: 14px; color: var(--gray); font-size: 13px; }
-  .hist-item { padding: 8px 0; border-bottom: 1px solid var(--border);
-               display: flex; justify-content: space-between; cursor: pointer; }
-  .card { display: flex; align-items: center; gap: 10px; padding: 10px 0;
-          border-bottom: 1px solid var(--border); }
-  .card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
-  .card .info { flex: 1; }
-  .card .info .name { font-weight: bold; font-size: 15px; }
-  .card .info .code { color: var(--gray); font-size: 12px; }
-  .card button { padding: 6px 10px; font-size: 12px; border: none;
-                 border-radius: 16px; cursor: pointer; margin-left: 4px; }
-  .card .follow { background: #4a90e2; color: #fff; }
-  .card .unfollow { background: var(--border); color: var(--fg); }
-  .card .addfriend { background: #2ecc71; color: #fff; }
-  .card .already { background: var(--border); color: var(--gray); }
-
-  .login-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 40;
-                display: none; flex-direction: column; padding: 20px; justify-content: center; }
-  .login-page.show { display: flex; }
-  .login-page h2 { text-align: center; }
-  .login-page input { width: 100%; padding: 12px; font-size: 16px;
-                      border: 1px solid var(--border); border-radius: 8px;
-                      margin-bottom: 12px; background: var(--card); color: var(--fg); }
-  .login-page button { width: 100%; padding: 12px; font-size: 16px; background: #4a90e2;
-                       color: #fff; border: none; border-radius: 8px; }
-  .login-page .link { text-align: center; margin-top: 16px; font-size: 14px; color: #4a90e2; cursor: pointer; }
-
-  .settings-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 45;
-                   display: none; flex-direction: column; padding: 16px; overflow-y: auto; }
-  .settings-page.show { display: flex; }
-  .settings-page label { font-size: 14px; color: var(--gray); margin-top: 12px; display: block; }
-  .settings-page input, .settings-page select, .settings-page textarea {
-    width: 100%; padding: 10px; font-size: 15px;
-    border: 1px solid var(--border); border-radius: 8px; margin-top: 4px;
-    background: var(--card); color: var(--fg);
-  }
-  .settings-page .save-btn { background: #4a90e2; color: #fff; padding: 12px;
-                             border: none; border-radius: 8px; margin-top: 20px; font-size: 16px; }
-  .settings-page .del-btn { background: #c62828; color: #fff; padding: 12px;
-                            border: none; border-radius: 8px; margin-top: 30px; font-size: 16px; }
-
-  .messages-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 50;
-                   display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
-  .messages-page.show { display: flex; }
-  .messages-page h2 { text-align: center; margin: 8px 0; }
-  .tab-row { display: flex; gap: 6px; margin: 10px 0; }
-  .tab-row div { flex: 1; text-align: center; padding: 8px; border-radius: 8px;
-                 background: var(--border); cursor: pointer; }
-  .tab-row div.active { background: #4a90e2; color: #fff; }
-
+.messages-page.show { display: flex; }
+.messages-page h2 { text-align: center; margin: 8px 0; }
+.tab-row { display: flex; gap: 6px; margin: 10px 0; }
+.tab-row div { flex: 1; text-align: center; padding: 8px; border-radius: 8px;
+               background: var(--border); cursor: pointer; }
+.tab-row div.active { background: #4a90e2; color: #fff; }
+  
   .chat-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 55;
                display: none; flex-direction: column; }
   .chat-page.show { display: flex; }
@@ -146,7 +145,6 @@
                  background: #4a90e2; color: #fff; word-break: break-word; }
   .msg.theirs .bubble { background: var(--border); color: var(--fg); }
   .msg .bubble img { max-width: 100%; border-radius: 8px; margin-top: 6px; }
-  .msg .bubble .recall { font-size: 12px; color: var(--gray); font-style: italic; }
   .chat-input { display: flex; gap: 6px; padding: 10px; border-top: 1px solid var(--border); }
   .chat-input input[type=text] { flex: 1; padding: 10px; font-size: 15px;
                                  border: 1px solid var(--border); border-radius: 20px;
@@ -155,6 +153,25 @@
                        color: #fff; border: none; border-radius: 20px; }
   .chat-input label { padding: 8px; font-size: 20px; cursor: pointer; }
   .chat-input input[type=file] { display: none; }
+
+  .profile-card { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                  background: var(--card); color: var(--fg); border-radius: 14px;
+                  padding: 24px; z-index: 60; text-align: center; width: 300px;
+                  box-shadow: 0 4px 20px rgba(0,0,0,.25); display: none; }
+  .profile-card.show { display: block; }
+  .profile-card img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
+  .profile-card .name { font-weight: bold; font-size: 18px; margin-top: 10px; }
+  .profile-card .code { color: var(--gray); font-size: 13px; margin-top: 4px; }
+  .profile-card .gender { color: var(--gray); font-size: 13px; margin-top: 4px; }
+  .profile-card .bio { margin-top: 12px; font-size: 14px; line-height: 1.6;
+                       color: var(--gray); padding: 0 8px; }
+  .profile-card .btns { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+  .profile-card .btns button { padding: 8px 18px; border-radius: 20px; border: none; cursor: pointer; font-size: 14px; }
+  .profile-card .btns .follow { background: #4a90e2; color: #fff; }
+  .profile-card .btns .unfollow { background: var(--border); color: var(--fg); }
+  .profile-card .btns .addfriend { background: #2ecc71; color: #fff; }
+  .profile-card .btns .already { background: var(--border); color: var(--gray); }
+  .profile-card .btns .close-btn { background: var(--border); color: var(--fg); }
 </style>
 </head>
 <body>
@@ -216,10 +233,11 @@
 </div>
 
 <div class="login-page" id="loginPage">
-  <h2>登录</h2>
-  <input id="loginCode" placeholder="输入你的编码，如 #5956">
+  <h2>欢迎</h2>
+  <button onclick="location.href='login.html'" style="margin-bottom:20px">去注册</button>
+  <p style="text-align:center;color:#999;font-size:14px">或</p>
+  <input id="loginCode" placeholder="输入你的编码登录，如 #5956">
   <button onclick="doLogin()">登录</button>
-  <div class="link" onclick="location.href='login.html'">没有账号？去注册</div>
 </div>
 
 <div class="settings-page" id="settingsPage">
@@ -236,7 +254,7 @@
     <option value="男">男</option>
     <option value="女">女</option>
   </select>
-  <label>个人介绍（最多 50 字，可不填）</label>
+  <label>个人介绍（最多 50 字，选填）</label>
   <textarea id="setBio" maxlength="50"></textarea>
   <button class="save-btn" onclick="saveSettings()">保存</button>
   <button class="del-btn" onclick="deleteAccount()">删除账号</button>
@@ -258,6 +276,7 @@
     <span id="chatName"></span>
     <button style="margin-left:auto;font-size:14px;" onclick="unfriend()">删除好友</button>
     <button style="font-size:14px;color:#c62828;" onclick="blockUser()">拉黑</button>
+    <button style="font-size:14px;" onclick="clearLocalChat()">清空</button>
   </div>
   <div class="chat-body" id="chatBody"></div>
   <div class="chat-input">
@@ -265,6 +284,19 @@
     <input type="file" id="chatImage" accept="image/*">
     <input type="text" id="chatText" placeholder="说点什么...">
     <button onclick="sendChat()">发送</button>
+  </div>
+</div>
+
+<div class="profile-card" id="profileCard">
+  <img id="pcAvatar" src="">
+  <div class="name" id="pcName"></div>
+  <div class="code" id="pcCode"></div>
+  <div class="gender" id="pcGender"></div>
+  <div class="bio" id="pcBio"></div>
+  <div class="btns">
+    <button id="pcFollowBtn" class="follow">关注</button>
+    <button id="pcFriendBtn" class="addfriend">加好友</button>
+    <button class="close-btn" onclick="closeProfile()">退出</button>
   </div>
 </div>
 
@@ -276,6 +308,7 @@ const SUPABASE_KEY = "sb_publishable_Cwuigqfp_poxrjYjVVtJkQ_klug8TTt";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let myCode = localStorage.getItem("myCode");
+let isAdmin = false;
 let currentPostId = null;
 let userMap = {};
 let followingMap = {};
@@ -284,21 +317,10 @@ let blockMap = {};
 let chatTarget = null;
 let chatTimer = null;
 let lastMsgCount = 0;
+let hiddenMsgs = JSON.parse(localStorage.getItem("hiddenMsgs") || "[]");
 
 if (localStorage.getItem("theme") === "dark") {
   document.documentElement.classList.add("dark");
-}
-
-const ding = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-
-document.addEventListener("click", function once() {
-  ding.volume = 0;
-  ding.play().then(() => { ding.pause(); ding.volume = 1; }).catch(()=>{});
-  document.removeEventListener("click", once);
-}, { once: true });
-
-function playDing() {
-  try { ding.currentTime = 0; ding.play(); } catch(e) {}
 }
 
 function toggleTheme() {
@@ -339,6 +361,8 @@ function goHome() {
 }
 
 async function startApp() {
+  const { data: me } = await db.from("users").select("*").eq("code", myCode);
+  if (me && me[0] && me[0].is_admin) isAdmin = true;
   await loadFollows();
   await loadFriendData();
   await loadPosts();
@@ -422,7 +446,41 @@ async function deleteAccount() {
   localStorage.removeItem("myCode");
   alert("已删除");
   location.href = "login.html";
-  }
+}
+
+function showProfile(code) {
+  const u = userMap[code];
+  if (!u) return;
+  document.getElementById("pcAvatar").src = u.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect fill='%23ddd' width='80' height='80'/%3E%3C/svg%3E";
+  document.getElementById("pcName").innerText = u.nickname || "未知";
+  document.getElementById("pcCode").innerText = u.code;
+  document.getElementById("pcGender").innerText = u.gender ? "性别：" + u.gender : "";
+  document.getElementById("pcBio").innerText = u.bio || "这个人很懒，什么都没写";
+
+  const followBtn = document.getElementById("pcFollowBtn");
+  const isFollowing = followingMap[code];
+  followBtn.innerText = isFollowing ? "已关注" : "关注";
+  followBtn.className = isFollowing ? "unfollow" : "follow";
+  followBtn.onclick = async () => {
+    await toggleFollow(code, followingMap[code]);
+    showProfile(code);
+  };
+
+  const friendBtn = document.getElementById("pcFriendBtn");
+  const isFriend = friendMap[code];
+  const reqSent = friendMap.pending && friendMap.pending[code];
+  const blocked = blockMap[code];
+  if (blocked) { friendBtn.innerText = "已拉黑"; friendBtn.className = "already"; friendBtn.onclick = null; }
+  else if (isFriend) { friendBtn.innerText = "私信"; friendBtn.className = "unfollow"; friendBtn.onclick = () => { closeProfile(); openChat(code); }; }
+  else if (reqSent) { friendBtn.innerText = "已申请"; friendBtn.className = "already"; friendBtn.onclick = null; }
+  else { friendBtn.innerText = "加好友"; friendBtn.className = "addfriend"; friendBtn.onclick = async () => { await sendFriendReq(code); showProfile(code); }; }
+
+  document.getElementById("profileCard").classList.add("show");
+}
+
+function closeProfile() {
+  document.getElementById("profileCard").classList.remove("show");
+}
   
 async function loadHistory() {
   const { data } = await db.from("search_history").select("*")
@@ -480,8 +538,8 @@ async function doSearch() {
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
-      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}">
-      <div class="info">
+      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}" onclick="showProfile('${u.code}')">
+      <div class="info" onclick="showProfile('${u.code}')">
         <div class="name">${u.nickname}</div>
         <div class="code">${u.code}</div>
       </div>
@@ -552,17 +610,7 @@ async function updateBadge() {
   const badge = document.getElementById("msgBadge");
   if (n > 0) { badge.style.display = "inline-block"; badge.innerText = n; }
   else { badge.style.display = "none"; }
-
-  if (chatTarget) {
-    const { data: msgs } = await db.from("messages").select("*");
-    const count = (msgs || []).filter(m =>
-      (m.from_code === myCode && m.to_code === chatTarget) ||
-      (m.from_code === chatTarget && m.to_code === myCode)
-    ).length;
-    if (count > lastMsgCount && lastMsgCount > 0) playDing();
-    lastMsgCount = count;
-  }
-                       }
+}
   
 async function loadPosts() {
   const { data: posts, error } = await db.from("posts").select("*").order("created_at", { ascending: false });
@@ -605,13 +653,14 @@ async function renderPosts(posts) {
     const likedByMe = postLikes.some(l => l.user_code === myCode);
     const cmtCount = (comments || []).filter(c => c.post_id === p.id).length;
     const favedByMe = (favs || []).some(f => f.post_id === p.id && f.user_code === myCode);
+    const canDel = p.user_code === myCode || isAdmin;
     const div = document.createElement("div");
     div.className = "post";
     div.innerHTML = `
       <div class="head">
-        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}">
+        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}" onclick="showProfile('${p.user_code}')">
         <div>
-          <div class="name">${u.nickname}</div>
+          <div class="name" onclick="showProfile('${p.user_code}')">${u.nickname}</div>
           <div class="code">${p.user_code}</div>
         </div>
       </div>
@@ -628,7 +677,7 @@ async function renderPosts(posts) {
         <button class="cmt-btn" onclick="toggleFav(${p.id}, ${favedByMe})">
           ${favedByMe ? '⭐' : '☆'}
         </button>
-        ${p.user_code === myCode ? `<button class="cmt-btn" onclick="delPost(${p.id})">... </button>` : ""}
+        ${canDel ? `<button class="cmt-btn" onclick="delPost(${p.id})">... </button>` : ""}
       </div>
     `;
     box.appendChild(div);
@@ -676,8 +725,8 @@ async function loadRequests() {
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
-      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}">
-      <div class="info">
+      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}" onclick="showProfile('${r.from_code}')">
+      <div class="info" onclick="showProfile('${r.from_code}')">
         <div class="name">${u.nickname}</div>
         <div class="code">${r.from_code}</div>
       </div>
@@ -716,8 +765,8 @@ async function loadChats() {
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
-      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}">
-      <div class="info">
+      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}" onclick="showProfile('${code}')">
+      <div class="info" onclick="showProfile('${code}')">
         <div class="name">${u.nickname}</div>
         <div class="code">${code}</div>
       </div>
@@ -725,7 +774,7 @@ async function loadChats() {
     `;
     box.appendChild(div);
   });
-  }
+    }
   
 async function openChat(targetCode) {
   if (blockMap[targetCode]) { alert("你已拉黑对方"); return; }
@@ -746,10 +795,19 @@ function closeChat() {
   chatTarget = null;
 }
 
+function clearLocalChat() {
+  if (!confirm("清空本地聊天记录？对方还能看到，但你这边不显示了。")) return;
+  if (!chatTarget) return;
+  hiddenMsgs.push(chatTarget);
+  localStorage.setItem("hiddenMsgs", JSON.stringify(hiddenMsgs));
+  document.getElementById("chatBody").innerHTML = "";
+  alert("已清空本地记录");
+}
+
 async function loadChat() {
   if (!chatTarget) return;
   const { data } = await db.from("messages").select("*");
-  const msgs = (data || []).filter(m =>
+  let msgs = (data || []).filter(m =>
     (m.from_code === myCode && m.to_code === chatTarget) ||
     (m.from_code === chatTarget && m.to_code === myCode)
   ).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
@@ -814,7 +872,7 @@ async function blockUser() {
   closeChat();
   alert("已拉黑");
 }
-
+  
 async function openComments(postId) {
   currentPostId = postId;
   document.getElementById("overlay").classList.add("show");
@@ -824,9 +882,9 @@ async function openComments(postId) {
   document.getElementById("cmtPost").innerHTML = `
     <div class="post">
       <div class="head">
-        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}">
+        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}" onclick="showProfile('${p.user_code}')">
         <div>
-          <div class="name">${u.nickname}</div>
+          <div class="name" onclick="showProfile('${p.user_code}')">${u.nickname}</div>
           <div class="code">${p.user_code}</div>
         </div>
       </div>
@@ -846,13 +904,14 @@ async function loadComments() {
     const u = userMap[c.user_code] || { nickname: "未知", avatar: "" };
     const cLikes = (clikes || []).filter(l => l.comment_id === c.id);
     const likedByMe = cLikes.some(l => l.user_code === myCode);
+    const canDel = c.user_code === myCode || isAdmin;
     const div = document.createElement("div");
     div.className = "cmt-item";
     div.innerHTML = `
       <div class="head">
-        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22%3E%3Crect fill=%22%23ddd%22 width=%2228%22 height=%2228%22/%3E%3C/svg%3E'}">
+        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22%3E%3Crect fill=%22%23ddd%22 width=%2228%22 height=%2228%22/%3E%3C/svg%3E'}" onclick="showProfile('${c.user_code}')">
         <div>
-          <div class="name">${u.nickname}</div>
+          <div class="name" onclick="showProfile('${c.user_code}')">${u.nickname}</div>
           <div class="code">${c.user_code}</div>
         </div>
       </div>
@@ -861,7 +920,7 @@ async function loadComments() {
         <button class="${likedByMe ? 'liked' : ''}" onclick="toggleCmtLike(${c.id}, ${likedByMe})">
           ${likedByMe ? '❤️' : '🤍'} ${cLikes.length}
         </button>
-        ${c.user_code === myCode ? `<button onclick="delComment(${c.id})">删除</button>` : ""}
+        ${canDel ? `<button onclick="delComment(${c.id})">删除</button>` : ""}
       </div>
     `;
     box.appendChild(div);
