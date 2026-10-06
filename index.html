@@ -17,7 +17,7 @@
   textarea { width: 100%; height: 70px; padding: 10px; font-size: 16px;
              border: 1px solid var(--border); border-radius: 8px; resize: none;
              background: var(--card); color: var(--fg); }
-  input[type=text], input[type=url] { width: 100%; padding: 10px; font-size: 15px;
+  input[type=text], input[type=url], input[type=password] { width: 100%; padding: 10px; font-size: 15px;
              border: 1px solid var(--border); border-radius: 8px;
              background: var(--card); color: var(--fg); margin-top: 6px; }
   button.post-btn { width: 100%; padding: 10px; margin-top: 8px; font-size: 16px;
@@ -28,10 +28,12 @@
   .post .head img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; cursor: pointer; }
   .post .head .name { font-weight: bold; font-size: 15px; cursor: pointer; }
   .post .head .code { color: var(--gray); font-size: 12px; }
-  .post .head .admin-tag { font-size: 11px; background: #f1c40f; color: #000;
-                           padding: 1px 6px; border-radius: 8px; margin-left: 4px; }
-  .post .head .mod-tag { font-size: 11px; background: #3498db; color: #fff;
-                         padding: 1px 6px; border-radius: 8px; margin-left: 4px; }
+  .admin-tag { font-size: 11px; background: #f1c40f; color: #000;
+               padding: 1px 6px; border-radius: 8px; margin-left: 4px; }
+  .mod-tag { font-size: 11px; background: #3498db; color: #fff;
+             padding: 1px 6px; border-radius: 8px; margin-left: 4px; }
+  .guest-tag { font-size: 11px; background: var(--border); color: var(--gray);
+               padding: 1px 6px; border-radius: 8px; margin-left: 4px; }
   .post .content { font-size: 16px; line-height: 1.5; margin-top: 8px; white-space: pre-wrap; }
   .post .content img { max-width: 100%; border-radius: 8px; margin-top: 8px; display: block; }
   .post .content .vlink { color: #4a90e2; word-break: break-all; }
@@ -81,73 +83,69 @@
                              padding: 2px 7px; border-radius: 10px; }
 .mask { position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 15; display: none; }
 .mask.show { display: block; }
-
-.admin-tag { font-size: 11px; background: #f1c40f; color: #000;
-             padding: 1px 6px; border-radius: 8px; margin-left: 4px; }
-.mod-tag { font-size: 11px; background: #3498db; color: #fff;
-           padding: 1px 6px; border-radius: 8px; margin-left: 4px; }
   
-  .search-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 30;
+.search-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 30;
+               display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
+.search-page.show { display: flex; }
+.search-bar { display: flex; gap: 6px; }
+.search-bar input { flex: 1; padding: 10px; font-size: 15px;
+                    border: 1px solid var(--border); border-radius: 8px;
+                    background: var(--card); color: var(--fg); margin-top: 0; }
+.search-bar button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
+                     color: #fff; border: none; border-radius: 8px; }
+.hist-head { display: flex; justify-content: space-between; align-items: center;
+             margin-top: 14px; color: var(--gray); font-size: 13px; }
+.hist-item { padding: 8px 0; border-bottom: 1px solid var(--border);
+             display: flex; justify-content: space-between; cursor: pointer; }
+.card { display: flex; align-items: center; gap: 10px; padding: 10px 0;
+        border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer; }
+.card .info { flex: 1; cursor: pointer; min-width: 100px; }
+.card .info .name { font-weight: bold; font-size: 15px; }
+.card .info .code { color: var(--gray); font-size: 12px; }
+.card button { padding: 6px 10px; font-size: 12px; border: none;
+               border-radius: 16px; cursor: pointer; margin-left: 4px; }
+.card .follow { background: #4a90e2; color: #fff; }
+.card .unfollow { background: var(--border); color: var(--fg); }
+.card .addfriend { background: #2ecc71; color: #fff; }
+.card .already { background: var(--border); color: var(--gray); }
+.card .grant { background: #f1c40f; color: #000; }
+.card .revoke { background: #e67e22; color: #fff; }
+
+.login-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 40;
+              display: none; flex-direction: column; padding: 20px; justify-content: center; }
+.login-page.show { display: flex; }
+.login-page h2 { text-align: center; }
+.login-page input { width: 100%; padding: 12px; font-size: 16px;
+                    border: 1px solid var(--border); border-radius: 8px;
+                    margin-bottom: 12px; background: var(--card); color: var(--fg); margin-top: 0; }
+.login-page button { width: 100%; padding: 12px; font-size: 16px; background: #4a90e2;
+                     color: #fff; border: none; border-radius: 8px; margin-bottom: 10px; }
+.login-page .guest-btn { background: #888; }
+
+.settings-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 45;
+                 display: none; flex-direction: column; padding: 16px; overflow-y: auto; }
+.settings-page.show { display: flex; }
+.settings-page label { font-size: 14px; color: var(--gray); margin-top: 12px; display: block; }
+.settings-page input, .settings-page select, .settings-page textarea {
+  width: 100%; padding: 10px; font-size: 15px;
+  border: 1px solid var(--border); border-radius: 8px; margin-top: 4px;
+  background: var(--card); color: var(--fg);
+}
+.settings-page .save-btn { background: #4a90e2; color: #fff; padding: 12px;
+                           border: none; border-radius: 8px; margin-top: 20px; font-size: 16px; }
+.settings-page .del-btn { background: #c62828; color: #fff; padding: 12px;
+                          border: none; border-radius: 8px; margin-top: 30px; font-size: 16px; }
+
+.messages-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 50;
                  display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
-  .search-page.show { display: flex; }
-  .search-bar { display: flex; gap: 6px; }
-  .search-bar input { flex: 1; padding: 10px; font-size: 15px;
-                      border: 1px solid var(--border); border-radius: 8px;
-                      background: var(--card); color: var(--fg); }
-  .search-bar button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
-                       color: #fff; border: none; border-radius: 8px; }
-  .hist-head { display: flex; justify-content: space-between; align-items: center;
-               margin-top: 14px; color: var(--gray); font-size: 13px; }
-  .hist-item { padding: 8px 0; border-bottom: 1px solid var(--border);
-               display: flex; justify-content: space-between; cursor: pointer; }
-  .card { display: flex; align-items: center; gap: 10px; padding: 10px 0;
-          border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-  .card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer; }
-  .card .info { flex: 1; cursor: pointer; min-width: 100px; }
-  .card .info .name { font-weight: bold; font-size: 15px; }
-  .card .info .code { color: var(--gray); font-size: 12px; }
-  .card button { padding: 6px 10px; font-size: 12px; border: none;
-                 border-radius: 16px; cursor: pointer; margin-left: 4px; }
-  .card .follow { background: #4a90e2; color: #fff; }
-  .card .unfollow { background: var(--border); color: var(--fg); }
-  .card .addfriend { background: #2ecc71; color: #fff; }
-  .card .already { background: var(--border); color: var(--gray); }
-  .card .grant { background: #f1c40f; color: #000; }
-  .card .revoke { background: #e67e22; color: #fff; }
-
-  .login-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 40;
-                display: none; flex-direction: column; padding: 20px; justify-content: center; }
-  .login-page.show { display: flex; }
-  .login-page h2 { text-align: center; }
-  .login-page input { width: 100%; padding: 12px; font-size: 16px;
-                      border: 1px solid var(--border); border-radius: 8px;
-                      margin-bottom: 12px; background: var(--card); color: var(--fg); }
-  .login-page button { width: 100%; padding: 12px; font-size: 16px; background: #4a90e2;
-                       color: #fff; border: none; border-radius: 8px; }
-
-  .settings-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 45;
-                   display: none; flex-direction: column; padding: 16px; overflow-y: auto; }
-  .settings-page.show { display: flex; }
-  .settings-page label { font-size: 14px; color: var(--gray); margin-top: 12px; display: block; }
-  .settings-page input, .settings-page select, .settings-page textarea {
-    width: 100%; padding: 10px; font-size: 15px;
-    border: 1px solid var(--border); border-radius: 8px; margin-top: 4px;
-    background: var(--card); color: var(--fg);
-  }
-  .settings-page .save-btn { background: #4a90e2; color: #fff; padding: 12px;
-                             border: none; border-radius: 8px; margin-top: 20px; font-size: 16px; }
-  .settings-page .del-btn { background: #c62828; color: #fff; padding: 12px;
-                            border: none; border-radius: 8px; margin-top: 30px; font-size: 16px; }
-
-  .messages-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 50;
-                   display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
-  .messages-page.show { display: flex; }
-  .messages-page h2 { text-align: center; margin: 8px 0; }
-  .tab-row { display: flex; gap: 6px; margin: 10px 0; }
-  .tab-row div { flex: 1; text-align: center; padding: 8px; border-radius: 8px;
-                 background: var(--border); cursor: pointer; }
-  .tab-row div.active { background: #4a90e2; color: #fff; }
-
+.messages-page.show { display: flex; }
+.messages-page h2 { text-align: center; margin: 8px 0; }
+.tab-row { display: flex; gap: 6px; margin: 10px 0; }
+.tab-row div { flex: 1; text-align: center; padding: 8px; border-radius: 8px;
+               background: var(--border); cursor: pointer; }
+.tab-row div.active { background: #4a90e2; color: #fff; }
+  
   .chat-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 55;
                display: none; flex-direction: column; }
   .chat-page.show { display: flex; }
@@ -166,7 +164,7 @@
   .chat-input { display: flex; gap: 6px; padding: 10px; border-top: 1px solid var(--border); }
   .chat-input input[type=text] { flex: 1; padding: 10px; font-size: 15px;
                                  border: 1px solid var(--border); border-radius: 20px;
-                                 background: var(--card); color: var(--fg); }
+                                 background: var(--card); color: var(--fg); margin-top: 0; }
   .chat-input button { padding: 8px 14px; font-size: 15px; background: #4a90e2;
                        color: #fff; border: none; border-radius: 20px; }
   .chat-input label { padding: 8px; font-size: 20px; cursor: pointer; }
@@ -175,7 +173,7 @@
   .profile-card { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
                   background: var(--card); color: var(--fg); border-radius: 14px;
                   padding: 24px; z-index: 60; text-align: center; width: 300px;
-                  box-shadow: 0 4px 20px rgba(0,0,0,.25); display: none; }
+                  box-shadow: 0 4px 20px rgba(0,0,0,.25); display: none; max-height: 80vh; overflow-y: auto; }
   .profile-card.show { display: block; }
   .profile-card img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
   .profile-card .name { font-weight: bold; font-size: 18px; margin-top: 10px; }
@@ -192,6 +190,7 @@
   .profile-card .btns .close-btn { background: var(--border); color: var(--fg); }
   .profile-card .btns .grant { background: #f1c40f; color: #000; }
   .profile-card .btns .revoke { background: #e67e22; color: #fff; }
+  .profile-card .btns .feedback { background: #9b59b6; color: #fff; }
 </style>
 </head>
 <body>
@@ -234,10 +233,12 @@
   <div class="menu-item" onclick="goHome()">🏠 主页</div>
   <div class="menu-item" onclick="showMyPosts()">查看</div>
   <div class="menu-item" onclick="showMyFavs()">收藏</div>
+  <div class="menu-item" onclick="showFollowing()">关注<span id="followBadge" class="badge" style="display:none">0</span></div>
   <div class="menu-item" onclick="toggleTheme()">界面</div>
   <div class="menu-item" onclick="openSettings()">设置</div>
   <div class="menu-item" onclick="openMessages()">消息<span id="msgBadge" class="badge" style="display:none">0</span></div>
   <div class="menu-item" id="adminMenu" style="display:none" onclick="openAdminPanel()">管理<span id="adminBadge" class="badge" style="display:none">0</span></div>
+  <div class="menu-item" id="fbMenu" style="display:none" onclick="openFeedback()">用户反馈<span id="fbBadge" class="badge" style="display:none">0</span></div>
   <div class="menu-item" style="color:#c62828" onclick="logout()">退出登录</div>
 </div>
 
@@ -257,10 +258,12 @@
 
 <div class="login-page" id="loginPage">
   <h2>欢迎</h2>
-  <button onclick="location.href='login.html'" style="margin-bottom:20px">去注册</button>
+  <button onclick="location.href='login.html'">去注册</button>
   <p style="text-align:center;color:#999;font-size:14px">或</p>
   <input id="loginCode" placeholder="输入你的编码登录，如 #5956">
+  <input id="loginPwd" type="password" placeholder="密码">
   <button onclick="doLogin()">登录</button>
+  <button class="guest-btn" onclick="guestLogin()">游客模式进入</button>
 </div>
 
 <div class="settings-page" id="settingsPage">
@@ -279,6 +282,8 @@
   </select>
   <label>个人介绍（最多 50 字，选填）</label>
   <textarea id="setBio" maxlength="50"></textarea>
+  <label>新密码（不填则不修改，最少 6 位）</label>
+  <input id="setPwd" type="password" placeholder="新密码">
   <button class="save-btn" onclick="saveSettings()">保存</button>
   <button class="del-btn" onclick="deleteAccount()">删除账号</button>
 </div>
@@ -319,6 +324,7 @@
   <div class="btns">
     <button id="pcFollowBtn" class="follow">关注</button>
     <button id="pcFriendBtn" class="addfriend">加好友</button>
+    <button id="pcFeedbackBtn" class="feedback" style="display:none">反馈</button>
     <button id="pcAdminBtn" class="grant" style="display:none">设为管理员</button>
     <button class="close-btn" onclick="closeProfile()">退出</button>
   </div>
@@ -328,6 +334,12 @@
   <h3 style="text-align:center;margin-top:0">管理</h3>
   <div id="adminList"></div>
   <div class="btns"><button class="close-btn" onclick="closeAdminPanel()">关闭</button></div>
+</div>
+
+<div class="profile-card" id="feedbackPanel" style="width:320px;text-align:left">
+  <h3 style="text-align:center;margin-top:0">用户反馈</h3>
+  <div id="feedbackList"></div>
+  <div class="btns"><button class="close-btn" onclick="closeFeedback()">关闭</button></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -340,6 +352,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let myCode = localStorage.getItem("myCode");
 let isAdmin = false;
 let isSuper = false;
+let isGuest = localStorage.getItem("isGuest") === "true";
 let currentPostId = null;
 let userMap = {};
 let followingMap = {};
@@ -350,7 +363,6 @@ let chatTimer = null;
 let lastMsgCount = 0;
 let lastUnreadCount = 0;
 let hiddenMsgs = JSON.parse(localStorage.getItem("hiddenMsgs") || "{}");
-let currentProfileCode = null;
 
 if (localStorage.getItem("theme") === "dark") {
   document.documentElement.classList.add("dark");
@@ -373,11 +385,31 @@ window.onload = async function() {
 
 async function doLogin() {
   const code = document.getElementById("loginCode").value.trim();
+  const pwd = document.getElementById("loginPwd").value;
   if (!code) { alert("请输入编码"); return; }
   const { data } = await db.from("users").select("*").eq("code", code);
   if (!data || data.length === 0) { alert("找不到这个编码"); return; }
+  const u = data[0];
+  if (u.password && u.password !== pwd) { alert("密码错误"); return; }
   localStorage.setItem("myCode", code);
+  localStorage.setItem("isGuest", "false");
   myCode = code;
+  isGuest = false;
+  document.getElementById("loginPage").classList.remove("show");
+  await startApp();
+}
+
+async function guestLogin() {
+  const code = "#" + Math.floor(1000 + Math.random() * 9000);
+  const nickname = "游客" + Math.floor(1000 + Math.random() * 9000);
+  await db.from("users").insert({
+    code: code, nickname: nickname, gender: "", bio: "",
+    avatar: "", password: "", is_guest: true
+  });
+  localStorage.setItem("myCode", code);
+  localStorage.setItem("isGuest", "true");
+  myCode = code;
+  isGuest = true;
   document.getElementById("loginPage").classList.remove("show");
   await startApp();
 }
@@ -385,6 +417,7 @@ async function doLogin() {
 function logout() {
   if (!confirm("确定退出登录？")) return;
   localStorage.removeItem("myCode");
+  localStorage.removeItem("isGuest");
   location.reload();
 }
 
@@ -400,8 +433,9 @@ function refreshAll() {
 async function startApp() {
   const { data: me } = await db.from("users").select("*").eq("code", myCode);
   if (me && me[0]) {
+    isGuest = me[0].is_guest === true;
     if (me[0].is_admin) { isAdmin = true; document.getElementById("adminMenu").style.display = "block"; }
-    if (me[0].is_super) { isSuper = true; }
+    if (me[0].is_super) { isSuper = true; document.getElementById("fbMenu").style.display = "block"; }
   }
   await loadFollows();
   await loadFriendData();
@@ -413,8 +447,7 @@ async function startApp() {
 function openSidebar() {
   const me = userMap[myCode] || {};
   document.getElementById("sideAvatar").src = me.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect fill='%23ddd' width='50' height='50'/%3E%3C/svg%3E";
-  let nameText = me.nickname || "未知";
-  document.getElementById("sideName").innerText = nameText;
+  document.getElementById("sideName").innerHTML = (me.nickname || "未知") + " " + adminTag(myCode);
   document.getElementById("sideCode").innerText = myCode || "";
   document.getElementById("sidebar").classList.add("show");
   document.getElementById("mask").classList.add("show");
@@ -437,6 +470,7 @@ function openSettings() {
   document.getElementById("setName").value = me.nickname || "";
   document.getElementById("setGender").value = me.gender || "";
   document.getElementById("setBio").value = me.bio || "";
+  document.getElementById("setPwd").value = "";
   document.getElementById("settingsPage").classList.add("show");
 }
 function closeSettings() {
@@ -456,13 +490,17 @@ async function saveSettings() {
   if (!nickname) { alert("名字不能空"); return; }
   const gender = document.getElementById("setGender").value;
   const bio = document.getElementById("setBio").value.trim();
+  const pwd = document.getElementById("setPwd").value;
+  if (pwd && pwd.length < 6) { alert("密码至少 6 位"); return; }
+
   const avatarEl = document.getElementById("setAvatar");
   const avatar = avatarEl.src.startsWith("data:image") && avatarEl.src.length > 200
     ? avatarEl.src : (userMap[myCode]?.avatar || "");
 
-  const { error } = await db.from("users")
-    .update({ nickname, gender, bio, avatar })
-    .eq("code", myCode);
+  const updates = { nickname, gender, bio, avatar };
+  if (pwd) updates.password = pwd;
+
+  const { error } = await db.from("users").update(updates).eq("code", myCode);
 
   if (error) { alert("保存失败：" + error.message); return; }
   alert("保存成功");
@@ -485,6 +523,7 @@ async function deleteAccount() {
   await db.from("follows").delete().eq("following", myCode);
   await db.from("users").delete().eq("code", myCode);
   localStorage.removeItem("myCode");
+  localStorage.removeItem("isGuest");
   alert("已删除");
   location.href = "login.html";
 }
@@ -494,11 +533,11 @@ function adminTag(code) {
   if (!u) return "";
   if (u.is_super) return '<span class="admin-tag">👑 最高管理员</span>';
   if (u.is_admin) return '<span class="mod-tag">🛡️ 管理员</span>';
+  if (u.is_guest) return '<span class="guest-tag">游客</span>';
   return "";
-}
-
+    }
+  
 function showProfile(code) {
-  currentProfileCode = code;
   const u = userMap[code];
   if (!u) return;
   document.getElementById("pcAvatar").src = u.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect fill='%23ddd' width='80' height='80'/%3E%3C/svg%3E";
@@ -509,7 +548,7 @@ function showProfile(code) {
 
   const followBtn = document.getElementById("pcFollowBtn");
   const isFollowing = followingMap[code];
-  if (code === myCode) { followBtn.style.display = "none"; }
+  if (code === myCode || isGuest) { followBtn.style.display = "none"; }
   else {
     followBtn.style.display = "inline-block";
     followBtn.innerText = isFollowing ? "已关注" : "关注";
@@ -518,7 +557,7 @@ function showProfile(code) {
   }
 
   const friendBtn = document.getElementById("pcFriendBtn");
-  if (code === myCode) { friendBtn.style.display = "none"; }
+  if (code === myCode || isGuest) { friendBtn.style.display = "none"; }
   else {
     friendBtn.style.display = "inline-block";
     const isFriend = friendMap[code];
@@ -529,6 +568,10 @@ function showProfile(code) {
     else if (reqSent) { friendBtn.innerText = "已申请"; friendBtn.className = "already"; friendBtn.onclick = null; }
     else { friendBtn.innerText = "加好友"; friendBtn.className = "addfriend"; friendBtn.onclick = async () => { await sendFriendReq(code); showProfile(code); }; }
   }
+
+  const fbBtn = document.getElementById("pcFeedbackBtn");
+  if (code === myCode || isSuper) { fbBtn.style.display = "none"; }
+  else { fbBtn.style.display = "inline-block"; fbBtn.onclick = () => sendFeedback(code); }
 
   const adminBtn = document.getElementById("pcAdminBtn");
   if (isSuper && code !== myCode) {
@@ -551,8 +594,41 @@ function showProfile(code) {
 
 function closeProfile() {
   document.getElementById("profileCard").classList.remove("show");
-  currentProfileCode = null;
-    }
+}
+
+async function sendFeedback(targetCode) {
+  const content = prompt("请输入反馈内容：");
+  if (!content || !content.trim()) return;
+  const { error } = await db.from("feedbacks").insert({
+    from_code: myCode, content: content.trim(), read: false
+  });
+  if (error) { alert("发送失败：" + error.message); return; }
+  alert("反馈已发送给最高管理员");
+}
+
+async function openFeedback() {
+  closeSidebar();
+  const box = document.getElementById("feedbackList");
+  const { data } = await db.from("feedbacks").select("*").order("created_at", { ascending: false });
+  if (!data || data.length === 0) { box.innerHTML = "<p style='color:#999;font-size:13px'>暂无反馈</p>"; }
+  else {
+    box.innerHTML = "";
+    data.forEach(f => {
+      const u = userMap[f.from_code] || { nickname: "未知" };
+      const div = document.createElement("div");
+      div.style.cssText = "padding:8px 0;border-bottom:1px solid var(--border);font-size:14px";
+      div.innerHTML = `<div style="font-weight:bold">${u.nickname} ${f.from_code}</div>
+                       <div style="margin-top:4px">${escapeHtml(f.content)}</div>
+                       <div style="color:var(--gray);font-size:12px;margin-top:4px">${new Date(f.created_at + "Z").toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>`;
+      box.appendChild(div);
+    });
+  }
+  document.getElementById("feedbackPanel").classList.add("show");
+}
+
+function closeFeedback() {
+  document.getElementById("feedbackPanel").classList.remove("show");
+  }
   
 async function loadHistory() {
   const { data } = await db.from("search_history").select("*")
@@ -615,17 +691,19 @@ async function doSearch() {
         <div class="name">${u.nickname} ${adminTag(u.code)}</div>
         <div class="code">${u.code}</div>
       </div>
-      <button class="${isFollowing ? 'unfollow' : 'follow'}"
-        onclick="toggleFollow('${u.code}', ${!!isFollowing})">
-        ${isFollowing ? '已关注' : '关注'}
-      </button>
-      ${blocked
-        ? `<button class="already">已拉黑</button>`
-        : isFriend
-          ? `<button class="unfollow" onclick="openChat('${u.code}')">私信</button>`
-          : reqSent
-            ? `<button class="already">已申请</button>`
-            : `<button class="addfriend" onclick="sendFriendReq('${u.code}')">加好友</button>`}
+      ${isGuest ? '' : `
+        <button class="${isFollowing ? 'unfollow' : 'follow'}"
+          onclick="toggleFollow('${u.code}', ${!!isFollowing})">
+          ${isFollowing ? '已关注' : '关注'}
+        </button>
+        ${blocked
+          ? `<button class="already">已拉黑</button>`
+          : isFriend
+            ? `<button class="unfollow" onclick="openChat('${u.code}')">私信</button>`
+            : reqSent
+              ? `<button class="already">已申请</button>`
+              : `<button class="addfriend" onclick="sendFriendReq('${u.code}')">加好友</button>`}
+      `}
     `;
     box.appendChild(div);
   });
@@ -645,6 +723,18 @@ async function loadFollows() {
   const { data } = await db.from("follows").select("*").eq("follower", myCode);
   followingMap = {};
   (data || []).forEach(f => followingMap[f.following] = true);
+}
+
+async function showFollowing() {
+  closeSidebar();
+  const { data: posts } = await db.from("posts").select("*").order("created_at", { ascending: false });
+  const list = (posts || []).filter(p => followingMap[p.user_code]);
+  const box = document.getElementById("list");
+  if (list.length === 0) { box.innerHTML = "<p style='color:#999;padding:20px;text-align:center'>你关注的人还没有发帖</p>"; return; }
+  const { data: users } = await db.from("users").select("*");
+  userMap = {};
+  (users || []).forEach(u => userMap[u.code] = u);
+  await renderPosts(list);
 }
 
 async function loadFriendData() {
@@ -673,27 +763,41 @@ async function sendFriendReq(targetCode) {
   alert("申请已发送");
   await loadFriendData();
   await doSearch();
-}
-
+  }
+  
 async function updateBadge() {
   const { data } = await db.from("friend_requests").select("*")
     .eq("to_code", myCode).eq("status", "pending");
   const n = (data || []).length;
 
-  const { data: msgs } = await db.from("messages").select("*").eq("to_code", myCode);
-  const unread = (msgs || []).filter(m => !m.read).length;
+  const { data: msgs } = await db.from("messages").select("*").eq("to_code", myCode).eq("read", false);
+  const unread = (msgs || []).length;
 
   const total = n + unread;
   const badge = document.getElementById("msgBadge");
   if (total > 0) { badge.style.display = "inline-block"; badge.innerText = total; }
   else { badge.style.display = "none"; }
 
-  if (total > lastUnreadCount && lastUnreadCount >= 0 && total > 0) {
-    // 有新的，提示
+  if (isSuper) {
+    const { data: fbs } = await db.from("feedbacks").select("*").eq("read", false);
+    const fn = (fbs || []).length;
+    const fbadge = document.getElementById("fbBadge");
+    if (fn > 0) { fbadge.style.display = "inline-block"; fbadge.innerText = fn; }
+    else { fbadge.style.display = "none"; }
   }
-  lastUnreadCount = total;
-  }
-  
+
+  const { data: allPosts } = await db.from("posts").select("*").order("created_at", { ascending: false });
+  const { data: seen } = await db.from("last_seen").select("*").eq("user_code", myCode);
+  const lastView = seen && seen[0] ? new Date(seen[0].last_viewed + "Z") : new Date(0);
+  const newFollowed = (allPosts || []).filter(p =>
+    followingMap[p.user_code] &&
+    new Date(p.created_at + "Z") > lastView
+  ).length;
+  const fbadge2 = document.getElementById("followBadge");
+  if (newFollowed > 0) { fbadge2.style.display = "inline-block"; fbadge2.innerText = newFollowed; }
+  else { fbadge2.style.display = "none"; }
+}
+
 async function loadPosts() {
   const { data: posts, error } = await db.from("posts").select("*").order("created_at", { ascending: false });
   const box = document.getElementById("list");
@@ -703,6 +807,12 @@ async function loadPosts() {
   userMap = {};
   (users || []).forEach(u => userMap[u.code] = u);
   await renderPosts(posts);
+  const seen = await db.from("last_seen").select("*").eq("user_code", myCode);
+  if (seen && seen[0]) {
+    await db.from("last_seen").update({ last_viewed: new Date().toISOString() }).eq("user_code", myCode);
+  } else {
+    await db.from("last_seen").insert({ user_code: myCode, last_viewed: new Date().toISOString() });
+  }
 }
 
 async function showMyPosts() {
@@ -739,9 +849,7 @@ async function renderPosts(posts) {
     const canDel = p.user_code === myCode || isAdmin;
 
     let videoHtml = "";
-    if (p.video) {
-      videoHtml = `<div style="margin-top:8px"><a class="vlink" href="${p.video}" target="_blank">▶ 点我播放视频</a></div>`;
-    }
+    if (p.video) videoHtml = `<div style="margin-top:8px"><a class="vlink" href="${p.video}" target="_blank">▶ 点我播放视频</a></div>`;
 
     const div = document.createElement("div");
     div.className = "post";
@@ -757,14 +865,14 @@ async function renderPosts(posts) {
       <div class="content">${escapeHtml(p.content)}${p.image ? `<img src="${p.image}">` : ""}${videoHtml}</div>
       <div class="time">${new Date(p.created_at + "Z").toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>
       <div class="actions">
-        <button class="like-btn ${likedByMe ? 'liked' : ''}" onclick="toggleLike(${p.id}, ${likedByMe})">
+        <button class="like-btn ${likedByMe ? 'liked' : ''}" onclick="${isGuest ? 'alert(\"游客不能点赞\")' : `toggleLike(${p.id}, ${likedByMe})`}">
           <span class="heart">${likedByMe ? '❤️' : '🤍'}</span>
           <span>${postLikes.length}</span>
         </button>
         <button class="cmt-btn" onclick="openComments(${p.id})">
           💬 <span>${cmtCount}</span>
         </button>
-        <button class="cmt-btn" onclick="toggleFav(${p.id}, ${favedByMe})">
+        <button class="cmt-btn" onclick="${isGuest ? 'alert(\"游客不能收藏\")' : `toggleFav(${p.id}, ${favedByMe})`}">
           ${favedByMe ? '⭐' : '☆'}
         </button>
         ${canDel ? `<button class="cmt-btn" onclick="delPost(${p.id})">... </button>` : ""}
@@ -790,8 +898,8 @@ async function toggleFav(postId, faved) {
   if (faved) await db.from("favorites").delete().eq("post_id", postId).eq("user_code", myCode);
   else await db.from("favorites").insert({ post_id: postId, user_code: myCode });
   loadPosts();
-}
-
+                                    }
+  
 function openMessages() {
   closeSidebar();
   document.getElementById("messagesPage").classList.add("show");
@@ -858,6 +966,7 @@ async function loadChats() {
   box.innerHTML = "";
   partners.forEach(code => {
     const u = userMap[code] || { nickname: "未知", avatar: "" };
+    const { data: unreadMsgs } = { data: [] };
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
@@ -871,7 +980,7 @@ async function loadChats() {
     box.appendChild(div);
   });
 }
-  
+
 async function openChat(targetCode) {
   if (blockMap[targetCode]) { alert("你已拉黑对方"); return; }
   chatTarget = targetCode;
@@ -892,6 +1001,7 @@ async function markRead(targetCode) {
   for (const m of (data || [])) {
     await db.from("messages").update({ read: true }).eq("id", m.id);
   }
+  updateBadge();
 }
 
 function closeChat() {
@@ -937,8 +1047,8 @@ async function loadChat() {
     body.appendChild(div);
   });
   body.scrollTop = body.scrollHeight;
-}
-
+  }
+  
 async function recallMsg(id) {
   if (!confirm("撤回这条消息？（2 分钟内可撤回）")) return;
   await db.from("messages").delete().eq("id", id);
@@ -985,12 +1095,12 @@ async function blockUser() {
   closeChat();
   alert("已拉黑");
 }
-  
+
 async function openAdminPanel() {
   closeSidebar();
   const box = document.getElementById("adminList");
   const { data: users } = await db.from("users").select("*");
-  const { data: posts } = await db.from("posts").select("*").eq("hidden", true);
+  const { data: hiddenPosts } = await db.from("posts").select("*").eq("hidden", true);
   box.innerHTML = "<h4 style='margin:10px 0'>所有用户（可授权管理员）</h4>";
   (users || []).forEach(u => {
     const div = document.createElement("div");
@@ -1007,10 +1117,10 @@ async function openAdminPanel() {
     box.appendChild(div);
   });
   box.innerHTML += "<h4 style='margin:16px 0 10px'>已隐藏的帖子</h4>";
-  if (!posts || posts.length === 0) {
+  if (!hiddenPosts || hiddenPosts.length === 0) {
     box.innerHTML += "<p style='color:#999;font-size:13px'>暂无隐藏帖</p>";
   } else {
-    posts.forEach(p => {
+    hiddenPosts.forEach(p => {
       const div = document.createElement("div");
       div.className = "card";
       div.innerHTML = `
@@ -1018,7 +1128,7 @@ async function openAdminPanel() {
           <div class="name">${escapeHtml(p.content).slice(0, 20)}...</div>
           <div class="code">${p.user_code}</div>
         </div>
-        <button class="grant" onclick="toggleHide(${p.id}, true)">恢复显示</button>
+        <button class="grant" onclick="toggleHide(${p.id}, true)">恢复</button>
       `;
       box.appendChild(div);
     });
@@ -1035,8 +1145,8 @@ async function grantAdmin(code, isAdminNow) {
   await loadPosts();
   await openAdminPanel();
   alert(isAdminNow ? "已撤销管理员" : "已授权管理员");
-}
-
+  }
+  
 async function openComments(postId) {
   currentPostId = postId;
   document.getElementById("overlay").classList.add("show");
@@ -1081,7 +1191,7 @@ async function loadComments() {
       </div>
       <div class="body">${escapeHtml(c.content)}</div>
       <div class="actions">
-        <button class="${likedByMe ? 'liked' : ''}" onclick="toggleCmtLike(${c.id}, ${likedByMe})">
+        <button class="${likedByMe ? 'liked' : ''}" onclick="${isGuest ? 'alert(\"游客不能点赞\")' : `toggleCmtLike(${c.id}, ${likedByMe})`}">
           ${likedByMe ? '❤️' : '🤍'} ${cLikes.length}
         </button>
         ${canDel ? `<button onclick="delComment(${c.id})">删除</button>` : ""}
@@ -1100,6 +1210,7 @@ async function toggleCmtLike(commentId, liked) {
 async function sendComment() {
   const content = document.getElementById("cmtInput").value.trim();
   if (!content) return;
+  if (isGuest) { alert("游客不能评论"); return; }
   const { error } = await db.from("comments").insert({
     post_id: currentPostId, user_code: myCode, content: content
   });
@@ -1117,16 +1228,17 @@ function closeComments() {
   document.getElementById("overlay").classList.remove("show");
   currentPostId = null;
   loadPosts();
-  }
-  
+}
+
 async function delPost(id) {
   if (!confirm("确定删除这条帖子？")) return;
   const { error } = await db.from("posts").delete().eq("id", id);
   if (error) { alert("删除失败：" + error.message); return; }
   loadPosts();
-}
-
+  }
+  
 async function postIt() {
+  if (isGuest) { alert("游客不能发帖"); return; }
   const content = document.getElementById("content").value.trim();
   const video = document.getElementById("postVideo").value.trim();
   const fileInput = document.getElementById("postImage");
