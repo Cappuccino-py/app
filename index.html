@@ -121,6 +121,7 @@ async function loadPosts() {
         <button class="cmt-btn" onclick="openComments(${p.id})">
           💬 <span>${cmtCount}</span>
         </button>
+        ${p.user_code === myCode ? `<button class="cmt-btn" onclick="delPost(${p.id})">... </button>` : ""}
       </div>
     `;
     box.appendChild(div);
@@ -201,6 +202,13 @@ async function delComment(id) {
 function closeComments() {
   document.getElementById("overlay").classList.remove("show");
   currentPostId = null;
+  loadPosts();
+}
+
+async function delPost(id) {
+  if (!confirm("确定删除这条帖子？")) return;
+  const { error } = await db.from("posts").delete().eq("id", id);
+  if (error) { alert("删除失败：" + error.message); return; }
   loadPosts();
 }
 
