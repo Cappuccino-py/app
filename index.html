@@ -92,6 +92,17 @@
   .login-page button { width: 100%; padding: 12px; font-size: 16px; background: #4a90e2;
                        color: #fff; border: none; border-radius: 8px; }
   .login-page .link { text-align: center; margin-top: 16px; font-size: 14px; color: #4a90e2; cursor: pointer; }
+
+  .settings-page { position: fixed; inset: 0; background: #fff; z-index: 45;
+                   display: none; flex-direction: column; padding: 16px; overflow-y: auto; }
+  .settings-page.show { display: flex; }
+  .settings-page label { font-size: 14px; color: #555; margin-top: 12px; display: block; }
+  .settings-page input, .settings-page select, .settings-page textarea {
+    width: 100%; padding: 10px; font-size: 15px;
+    border: 1px solid #ccc; border-radius: 8px; margin-top: 4px;
+  }
+  .settings-page .save-btn { background: #4a90e2; color: #fff; padding: 12px;
+                             border: none; border-radius: 8px; margin-top: 20px; font-size: 16px; }
 </style>
 </head>
 <body>
@@ -133,7 +144,7 @@
   <div class="menu-item" onclick="showMyPosts()">查看</div>
   <div class="menu-item" onclick="showMyFavs()">收藏</div>
   <div class="menu-item" onclick="alert('界面切换，下一批做')">界面</div>
-  <div class="menu-item" onclick="alert('设置，下一批做')">设置</div>
+  <div class="menu-item" onclick="openSettings()">设置</div>
   <div class="menu-item" style="color:#c62828" onclick="logout()">退出登录</div>
 </div>
 
@@ -151,6 +162,25 @@
   <input id="loginCode" placeholder="输入你的编码，如 #5956">
   <button onclick="doLogin()">登录</button>
   <div class="link" onclick="location.href='login.html'">没有账号？去注册</div>
+</div>
+
+<div class="settings-page" id="settingsPage">
+  <button class="close" onclick="closeSettings()">✕</button>
+  <h2>设置</h2>
+  <img id="setAvatar" style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;margin:10px auto;">
+  <label>头像（从相册上传）</label>
+  <input type="file" id="setAvatarFile" accept="image/*">
+  <label>名字</label>
+  <input id="setName" maxlength="20">
+  <label>性别</label>
+  <select id="setGender">
+    <option value="">不选</option>
+    <option value="男">男</option>
+    <option value="女">女</option>
+  </select>
+  <label>个人介绍（最多 50 字）</label>
+  <textarea id="setBio" maxlength="50"></textarea>
+  <button class="save-btn" onclick="saveSettings()">保存</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -214,7 +244,48 @@ function closeSidebar() {
 
 function openSearch() { document.getElementById("searchPage").classList.add("show"); }
 function closeSearch() { document.getElementById("searchPage").classList.remove("show"); }
- 
+
+function openSettings() {
+  closeSidebar();
+  const me = userMap[myCode] || {};
+  document.getElementById("setAvatar").src = me.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect fill='%23ddd' width='80' height='80'/%3E%3C/svg%3E";
+  document.getElementById("setName").value = me.nickname || "";
+  document.getElementById("setGender").value = me.gender || "";
+  document.getElementById("setBio").value = me.bio || "";
+  document.getElementById("settingsPage").classList.add("show");
+}
+function closeSettings() {
+  document.getElementById("settingsPage").classList.remove("show");
+}
+
+document.getElementById("setAvatarFile").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => document.getElementById("setAvatar").src = ev.target.result;
+  reader.readAsDataURL(file);
+});
+
+async function saveSettings() {
+  const nickname = document.getElementById("setName").value.trim();
+  if (!nickname) { alert("名字不能空"); return; }
+  const gender = document.getElementById("setGender").value;
+  const bio = document.getElementById("setBio").value.trim();
+  const avatarEl = document.getElementById("setAvatar");
+  const avatar = avatarEl.src.startsWith("data:image") && avatarEl.src.length > 200
+    ? avatarEl.src : (userMap[myCode]?.avatar || "");
+
+  const { error } = await db.from("users")
+    .update({ nickname, gender, bio, avatar })
+    .eq("code", myCode);
+
+  if (error) { alert("保存失败：" + error.message); return; }
+  alert("保存成功");
+  closeSettings();
+  await loadPosts();
+}
+</script>
+
 async function doSearch() {
   const kw = document.getElementById("searchInput").value.trim();
   const box = document.getElementById("searchResult");
@@ -444,6 +515,3 @@ async function postIt() {
 function escapeHtml(s) {
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
-</script>
-</body>
-</html>
