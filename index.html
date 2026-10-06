@@ -29,41 +29,41 @@
               display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 0; }
   .heart { font-size: 18px; }
   .like-btn.liked .heart { color: #e74c3c; }
+ 
+.overlay { position: fixed; inset: 0; background: #fff; z-index: 10;
+           display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
+.overlay.show { display: flex; }
+.overlay .close { font-size: 22px; background: none; border: none;
+                  text-align: left; padding: 4px; cursor: pointer; }
+.cmt-item { padding: 10px 0; border-bottom: 1px solid #eee; }
+.cmt-item .head { display: flex; align-items: center; gap: 6px; }
+.cmt-item .head img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+.cmt-item .head .name { font-size: 14px; font-weight: bold; }
+.cmt-item .head .code { font-size: 11px; color: #999; }
+.cmt-item .body { font-size: 15px; margin-top: 4px; }
+.cmt-item .actions { margin-top: 4px; display: flex; gap: 14px; font-size: 13px; color: #666; }
+.cmt-item .actions button { background: none; border: none; font-size: 13px;
+                            color: #666; cursor: pointer; padding: 0; }
+.cmt-item .actions .liked { color: #e74c3c; }
+.cmt-form { display: flex; gap: 6px; margin-top: 12px; }
+.cmt-form input { flex: 1; padding: 10px; font-size: 15px;
+                  border: 1px solid #ccc; border-radius: 8px; }
+.cmt-form button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
+                   color: #fff; border: none; border-radius: 8px; }
 
-  .overlay { position: fixed; inset: 0; background: #fff; z-index: 10;
-             display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
-  .overlay.show { display: flex; }
-  .overlay .close { font-size: 22px; background: none; border: none;
-                    text-align: left; padding: 4px; cursor: pointer; }
-  .cmt-item { padding: 10px 0; border-bottom: 1px solid #eee; }
-  .cmt-item .head { display: flex; align-items: center; gap: 6px; }
-  .cmt-item .head img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
-  .cmt-item .head .name { font-size: 14px; font-weight: bold; }
-  .cmt-item .head .code { font-size: 11px; color: #999; }
-  .cmt-item .body { font-size: 15px; margin-top: 4px; }
-  .cmt-item .actions { margin-top: 4px; display: flex; gap: 14px; font-size: 13px; color: #666; }
-  .cmt-item .actions button { background: none; border: none; font-size: 13px;
-                              color: #666; cursor: pointer; padding: 0; }
-  .cmt-item .actions .liked { color: #e74c3c; }
-  .cmt-form { display: flex; gap: 6px; margin-top: 12px; }
-  .cmt-form input { flex: 1; padding: 10px; font-size: 15px;
-                    border: 1px solid #ccc; border-radius: 8px; }
-  .cmt-form button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
-                     color: #fff; border: none; border-radius: 8px; }
-
-  .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 260px;
-             background: #fff; z-index: 20; box-shadow: 2px 0 10px rgba(0,0,0,.1);
-             transform: translateX(-100%); transition: .2s; padding: 16px; }
-  .sidebar.show { transform: translateX(0); }
-  .sidebar .profile { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-  .sidebar .profile img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
-  .sidebar .profile .name { font-weight: bold; font-size: 16px; }
-  .sidebar .profile .code { color: #999; font-size: 12px; }
-  .sidebar .menu-item { padding: 12px 4px; font-size: 16px; cursor: pointer;
-                        border-bottom: 1px solid #f0f0f0; }
-  .mask { position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 15; display: none; }
-  .mask.show { display: block; }
-
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 260px;
+           background: #fff; z-index: 20; box-shadow: 2px 0 10px rgba(0,0,0,.1);
+           transform: translateX(-100%); transition: .2s; padding: 16px; }
+.sidebar.show { transform: translateX(0); }
+.sidebar .profile { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.sidebar .profile img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+.sidebar .profile .name { font-weight: bold; font-size: 16px; }
+.sidebar .profile .code { color: #999; font-size: 12px; }
+.sidebar .menu-item { padding: 12px 4px; font-size: 16px; cursor: pointer;
+                      border-bottom: 1px solid #f0f0f0; }
+.mask { position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 15; display: none; }
+.mask.show { display: block; }
+ 
   .search-page { position: fixed; inset: 0; background: #fff; z-index: 30;
                  display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
   .search-page.show { display: flex; }
@@ -82,13 +82,23 @@
                  border-radius: 16px; cursor: pointer; }
   .card .follow { background: #4a90e2; color: #fff; }
   .card .unfollow { background: #eee; color: #333; }
+
+  .login-page { position: fixed; inset: 0; background: #fff; z-index: 40;
+                display: none; flex-direction: column; padding: 20px; justify-content: center; }
+  .login-page.show { display: flex; }
+  .login-page h2 { text-align: center; }
+  .login-page input { width: 100%; padding: 12px; font-size: 16px;
+                      border: 1px solid #ccc; border-radius: 8px; margin-bottom: 12px; }
+  .login-page button { width: 100%; padding: 12px; font-size: 16px; background: #4a90e2;
+                       color: #fff; border: none; border-radius: 8px; }
+  .login-page .link { text-align: center; margin-top: 16px; font-size: 14px; color: #4a90e2; cursor: pointer; }
 </style>
 </head>
 <body>
-
+ 
 <div class="top-bar">
   <button class="icon-btn" onclick="openSidebar()">⚙️</button>
-  <h1 style="flex:1;text-align:center;margin:0;">主页</h1>
+  <h1 style="flex:1;text-align:center;margin:0;cursor:pointer;" onclick="loadPosts()">主页</h1>
   <button class="icon-btn" onclick="openSearch()">🔍</button>
 </div>
 
@@ -134,24 +144,53 @@
   <div id="searchResult"></div>
 </div>
 
+<div class="login-page" id="loginPage">
+  <h2>登录</h2>
+  <input id="loginCode" placeholder="输入你的编码，如 #5956">
+  <button onclick="doLogin()">登录</button>
+  <div class="link" onclick="location.href='login.html'">没有账号？去注册</div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = "https://bzhntlpdouhwcbqcdsfj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Cwuigqfp_poxrjYjVVtJkQ_klug8TTt";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const myCode = localStorage.getItem("myCode");
-if (!myCode) { alert("请先注册"); location.href = "login.html"; }
-
+let myCode = localStorage.getItem("myCode");
 let currentPostId = null;
 let userMap = {};
 let followingMap = {};
+
+window.onload = async function() {
+  if (!myCode) {
+    document.getElementById("loginPage").classList.add("show");
+    return;
+  }
+  await startApp();
+};
+
+async function doLogin() {
+  const code = document.getElementById("loginCode").value.trim();
+  if (!code) { alert("请输入编码"); return; }
+  const { data } = await db.from("users").select("*").eq("code", code);
+  if (!data || data.length === 0) { alert("找不到这个编码"); return; }
+  localStorage.setItem("myCode", code);
+  myCode = code;
+  document.getElementById("loginPage").classList.remove("show");
+  await startApp();
+}
+
+async function startApp() {
+  await loadFollows();
+  await loadPosts();
+}
 
 function openSidebar() {
   const me = userMap[myCode] || {};
   document.getElementById("sideAvatar").src = me.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect fill='%23ddd' width='50' height='50'/%3E%3C/svg%3E";
   document.getElementById("sideName").innerText = me.nickname || "未知";
-  document.getElementById("sideCode").innerText = myCode;
+  document.getElementById("sideCode").innerText = myCode || "";
   document.getElementById("sidebar").classList.add("show");
   document.getElementById("mask").classList.add("show");
 }
@@ -160,12 +199,8 @@ function closeSidebar() {
   document.getElementById("mask").classList.remove("show");
 }
 
-function openSearch() {
-  document.getElementById("searchPage").classList.add("show");
-}
-function closeSearch() {
-  document.getElementById("searchPage").classList.remove("show");
-}
+function openSearch() { document.getElementById("searchPage").classList.add("show"); }
+function closeSearch() { document.getElementById("searchPage").classList.remove("show"); }
 
 async function doSearch() {
   const kw = document.getElementById("searchInput").value.trim();
@@ -177,7 +212,6 @@ async function doSearch() {
   ).filter(u => u.code !== myCode);
 
   if (matched.length === 0) { box.innerHTML = "<p style='color:#999'>没找到</p>"; return; }
-
   box.innerHTML = "";
   matched.forEach(u => {
     const isFollowing = followingMap[u.code];
@@ -213,17 +247,15 @@ async function loadFollows() {
   followingMap = {};
   (data || []).forEach(f => followingMap[f.following] = true);
 }
-
+ 
 async function loadPosts() {
   const { data: posts, error } = await db.from("posts").select("*").order("created_at", { ascending: false });
   const box = document.getElementById("list");
   if (error) { box.innerText = "加载失败：" + error.message; return; }
   if (!posts || posts.length === 0) { box.innerText = "还没有帖子"; return; }
-
   const { data: users } = await db.from("users").select("*");
   userMap = {};
   (users || []).forEach(u => userMap[u.code] = u);
-
   await renderPosts(posts);
 }
 
@@ -298,11 +330,10 @@ async function toggleFav(postId, faved) {
   else await db.from("favorites").insert({ post_id: postId, user_code: myCode });
   loadPosts();
 }
- 
+
 async function openComments(postId) {
   currentPostId = postId;
   document.getElementById("overlay").classList.add("show");
-
   const { data: posts } = await db.from("posts").select("*").eq("id", postId);
   const p = posts[0];
   const u = userMap[p.user_code] || { nickname: "未知", avatar: "" };
@@ -317,7 +348,6 @@ async function openComments(postId) {
       </div>
       <div class="content">${escapeHtml(p.content)}</div>
     </div>`;
-
   await loadComments();
 }
 
@@ -401,9 +431,6 @@ async function postIt() {
 function escapeHtml(s) {
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
-
-loadFollows();
-loadPosts();
 </script>
 </body>
 </html>
