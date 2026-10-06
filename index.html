@@ -7,7 +7,9 @@
 <style>
   * { box-sizing: border-box; }
   body { font-family: sans-serif; margin: 0; padding: 12px; background: #fff; }
-  h1 { text-align: center; font-size: 20px; }
+  h1 { text-align: center; font-size: 20px; margin: 8px 0; }
+  .top-bar { display: flex; justify-content: space-between; align-items: center; }
+  .top-bar .gear { font-size: 24px; background: none; border: none; cursor: pointer; }
   .post-box { background: #fff; padding: 12px; border-radius: 10px;
               margin-bottom: 12px; border: 1px solid #eee; }
   textarea { width: 100%; height: 70px; padding: 10px; font-size: 16px;
@@ -27,6 +29,7 @@
               display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 0; }
   .heart { font-size: 18px; }
   .like-btn.liked .heart { color: #e74c3c; }
+
   .overlay { position: fixed; inset: 0; background: #fff; z-index: 10;
              display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
   .overlay.show { display: flex; }
@@ -41,16 +44,35 @@
   .cmt-item .actions { margin-top: 4px; display: flex; gap: 14px; font-size: 13px; color: #666; }
   .cmt-item .actions button { background: none; border: none; font-size: 13px;
                               color: #666; cursor: pointer; padding: 0; }
+  .cmt-item .actions .liked { color: #e74c3c; }
   .cmt-form { display: flex; gap: 6px; margin-top: 12px; }
   .cmt-form input { flex: 1; padding: 10px; font-size: 15px;
                     border: 1px solid #ccc; border-radius: 8px; }
   .cmt-form button { padding: 10px 16px; font-size: 15px; background: #4a90e2;
                      color: #fff; border: none; border-radius: 8px; }
+
+  /* 侧边栏 */
+  .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 260px;
+             background: #fff; z-index: 20; box-shadow: 2px 0 10px rgba(0,0,0,.1);
+             transform: translateX(-100%); transition: .2s; padding: 16px; }
+  .sidebar.show { transform: translateX(0); }
+  .sidebar .profile { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .sidebar .profile img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+  .sidebar .profile .name { font-weight: bold; font-size: 16px; }
+  .sidebar .profile .code { color: #999; font-size: 12px; }
+  .sidebar .menu-item { padding: 12px 4px; font-size: 16px; cursor: pointer;
+                        border-bottom: 1px solid #f0f0f0; }
+  .mask { position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 15; display: none; }
+  .mask.show { display: block; }
 </style>
 </head>
 <body>
 
-<h1>主页</h1>
+<div class="top-bar">
+  <button class="gear" onclick="openSidebar()">⚙️</button>
+  <h1 style="flex:1;text-align:center;margin:0;">主页</h1>
+  <div style="width:32px;"></div>
+</div>
 
 <div class="post-box">
   <textarea id="content" placeholder="分享点什么..."></textarea>
@@ -69,6 +91,22 @@
   </div>
 </div>
 
+<div class="mask" id="mask" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="profile">
+    <img id="sideAvatar" src="">
+    <div>
+      <div class="name" id="sideName"></div>
+      <div class="code" id="sideCode"></div>
+    </div>
+  </div>
+  <div class="menu-item" onclick="alert('发帖功能用下面的框')">发帖</div>
+  <div class="menu-item" onclick="alert('查看我的帖，下一批做')">查看</div>
+  <div class="menu-item" onclick="alert('收藏列表，下一批做')">收藏</div>
+  <div class="menu-item" onclick="alert('界面切换，下一批做')">界面</div>
+  <div class="menu-item" onclick="alert('设置，下一批做')">设置</div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = "https://bzhntlpdouhwcbqcdsfj.supabase.co";
@@ -80,6 +118,19 @@ if (!myCode) { alert("请先注册"); location.href = "login.html"; }
 
 let currentPostId = null;
 let userMap = {};
+
+function openSidebar() {
+  const me = userMap[myCode] || {};
+  document.getElementById("sideAvatar").src = me.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect fill='%23ddd' width='50' height='50'/%3E%3C/svg%3E";
+  document.getElementById("sideName").innerText = me.nickname || "未知";
+  document.getElementById("sideCode").innerText = myCode;
+  document.getElementById("sidebar").classList.add("show");
+  document.getElementById("mask").classList.add("show");
+}
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("show");
+  document.getElementById("mask").classList.remove("show");
+}
 
 async function loadPosts() {
   const { data: posts, error } = await db.from("posts").select("*").order("created_at", { ascending: false });
@@ -170,11 +221,14 @@ async function openComments(postId) {
 async function loadComments() {
   const { data: comments } = await db.from("comments").select("*")
     .eq("post_id", currentPostId).order("created_at", { ascending: true });
+  const { data: clikes } = await db.from("comment_likes").select("*");
   const box = document.getElementById("cmtList");
   if (!comments || comments.length === 0) { box.innerHTML = "<p style='color:#999'>还没有评论</p>"; return; }
   box.innerHTML = "";
   comments.forEach(c => {
     const u = userMap[c.user_code] || { nickname: "未知", avatar: "" };
+    const cLikes = (clikes || []).filter(l => l.comment_id === c.id);
+    const likedByMe = cLikes.some(l => l.user_code === myCode);
     const div = document.createElement("div");
     div.className = "cmt-item";
     div.innerHTML = `
@@ -187,11 +241,20 @@ async function loadComments() {
       </div>
       <div class="body">${escapeHtml(c.content)}</div>
       <div class="actions">
+        <button class="${likedByMe ? 'liked' : ''}" onclick="toggleCmtLike(${c.id}, ${likedByMe})">
+          ${likedByMe ? '❤️' : '🤍'} ${cLikes.length}
+        </button>
         ${c.user_code === myCode ? `<button onclick="delComment(${c.id})">删除</button>` : ""}
       </div>
     `;
     box.appendChild(div);
   });
+}
+
+async function toggleCmtLike(commentId, liked) {
+  if (liked) await db.from("comment_likes").delete().eq("comment_id", commentId).eq("user_code", myCode);
+  else await db.from("comment_likes").insert({ comment_id: commentId, user_code: myCode });
+  await loadComments();
 }
 
 async function sendComment() {
