@@ -27,8 +27,6 @@
               display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 0; }
   .heart { font-size: 18px; }
   .like-btn.liked .heart { color: #e74c3c; }
-
-  /* 评论弹窗 */
   .overlay { position: fixed; inset: 0; background: #fff; z-index: 10;
              display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
   .overlay.show { display: flex; }
@@ -61,7 +59,6 @@
 
 <div id="list">加载中...</div>
 
-<!-- 评论弹窗 -->
 <div class="overlay" id="overlay">
   <button class="close" onclick="closeComments()">✕</button>
   <div id="cmtPost"></div>
@@ -135,12 +132,11 @@ async function toggleLike(postId, liked) {
   else await db.from("likes").insert({ post_id: postId, user_code: myCode });
   loadPosts();
 }
-
+ 
 async function openComments(postId) {
   currentPostId = postId;
   document.getElementById("overlay").classList.add("show");
 
-  // 显示帖子
   const { data: posts } = await db.from("posts").select("*").eq("id", postId);
   const p = posts[0];
   const u = userMap[p.user_code] || { nickname: "未知", avatar: "" };
@@ -159,4 +155,69 @@ async function openComments(postId) {
   await loadComments();
 }
 
-async funct
+async function loadComments() {
+  const { data: comments } = await db.from("comments").select("*")
+    .eq("post_id", currentPostId).order("created_at", { ascending: true });
+  const box = document.getElementById("cmtList");
+  if (!comments || comments.length === 0) { box.innerHTML = "<p style='color:#999'>还没有评论</p>"; return; }
+  box.innerHTML = "";
+  comments.forEach(c => {
+    const u = userMap[c.user_code] || { nickname: "未知", avatar: "" };
+    const div = document.createElement("div");
+    div.className = "cmt-item";
+    div.innerHTML = `
+      <div class="head">
+        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22%3E%3Crect fill=%22%23ddd%22 width=%2228%22 height=%2228%22/%3E%3C/svg%3E'}">
+        <div>
+          <div class="name">${u.nickname}</div>
+          <div class="code">${c.user_code}</div>
+        </div>
+      </div>
+      <div class="body">${escapeHtml(c.content)}</div>
+      <div class="actions">
+        ${c.user_code === myCode ? `<button onclick="delComment(${c.id})">删除</button>` : ""}
+      </div>
+    `;
+    box.appendChild(div);
+  });
+}
+
+async function sendComment() {
+  const content = document.getElementById("cmtInput").value.trim();
+  if (!content) return;
+  const { error } = await db.from("comments").insert({
+    post_id: currentPostId, user_code: myCode, content: content
+  });
+  if (error) { alert("评论失败：" + error.message); return; }
+  document.getElementById("cmtInput").value = "";
+  await loadComments();
+}
+
+async function delComment(id) {
+  await db.from("comments").delete().eq("id", id);
+  await loadComments();
+}
+
+function closeComments() {
+  document.getElementById("overlay").classList.remove("show");
+  currentPostId = null;
+  loadPosts();
+}
+
+async function postIt() {
+  const content = document.getElementById("content").value.trim();
+  if (!content) { alert("写点什么吧"); return; }
+  const { error } = await db.from("posts").insert({ user_code: myCode, content: content });
+  if (error) { alert("发布失败：" + error.message); return; }
+  document.getElementById("content").value = "";
+  loadPosts();
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+loadPosts();
+</script>
+</body>
+</html>
