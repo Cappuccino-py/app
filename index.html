@@ -299,6 +299,7 @@
   <input id="setPwd" type="password" placeholder="新密码">
   <button class="save-btn" onclick="saveSettings()">保存</button>
   <button class="del-btn" onclick="deleteAccount()">删除账号</button>
+  <button class="save-btn" style="background:#9b59b6" onclick="sendFeedback()">向站长反馈</button>
 </div>
 
 <div class="messages-page" id="messagesPage">
@@ -588,12 +589,7 @@ function showProfile(code) {
   }
 
   const fbBtn = document.getElementById("pcFeedbackBtn");
-  if (code === myCode || isSuper) fbBtn.style.display = "none";
-  else {
-    fbBtn.style.display = "inline-block";
-    fbBtn.innerText = isAdmin ? "向站长反馈（管理特需）" : "向站长反馈";
-    fbBtn.onclick = () => sendFeedback();
-  }
+fbBtn.style.display = "none";
 
   const adminBtn = document.getElementById("pcAdminBtn");
   if (isSuper && code !== myCode && !u.is_super) {
