@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="manifest" href="manifest.json">
 <title>主页</title>
+<link rel="manifest" href="manifest.json">
 <style>
   :root { --bg: #fff; --fg: #000; --card: #fff; --border: #eee; --gray: #999; }
   .dark { --bg: #111; --fg: #eee; --card: #1c1c1c; --border: #333; --gray: #888; }
@@ -18,7 +18,7 @@
   textarea { width: 100%; height: 70px; padding: 10px; font-size: 16px;
              border: 1px solid var(--border); border-radius: 8px; resize: none;
              background: var(--card); color: var(--fg); }
-  input[type=text], input[type=url], input[type=password] {
+  input[type=text], input[type=url], input[type=password], input[type=email] {
     width: 100%; padding: 10px; font-size: 15px;
     border: 1px solid var(--border); border-radius: 8px;
     background: var(--card); color: var(--fg); margin-top: 6px; }
@@ -47,6 +47,16 @@
   .heart { font-size: 18px; }
   .like-btn.liked .heart { color: #e74c3c; }
   
+.notice-modal { position: fixed; inset: 0; background: rgba(0,0,0,.5);
+                z-index: 9999; display: none; align-items: center; justify-content: center; }
+.notice-modal.show { display: flex; }
+.notice-box { background: var(--card); color: var(--fg); border-radius: 14px;
+              padding: 24px; width: 80%; max-width: 320px; text-align: center; }
+.notice-box h3 { margin: 0 0 12px; }
+.notice-box p { font-size: 14px; color: var(--gray); margin: 6px 0; line-height: 1.6; }
+.notice-box button { margin-top: 16px; padding: 10px 30px; border: none;
+                     border-radius: 20px; background: #4a90e2; color: #fff; font-size: 15px; }
+
 .overlay { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 10;
            display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
 .overlay.show { display: flex; }
@@ -207,6 +217,17 @@
 </head>
 <body>
 
+<div class="notice-modal" id="noticeModal">
+  <div class="notice-box">
+    <h3>👋 欢迎来到卡布奇诺站</h3>
+    <p>没广告、没算法、不卖东西。</p>
+    <p>可以发帖、吐槽、聊天，还能匿名。</p>
+    <p>人不多，但自由。</p>
+    <p>想说话，就注册一下，30 秒。</p>
+    <button onclick="closeNotice()">知道了</button>
+  </div>
+</div>
+
 <div class="top-bar">
   <button class="icon-btn" onclick="openSidebar()">⚙️</button>
   <h1 style="flex:1;text-align:center;margin:0;">主页</h1>
@@ -298,8 +319,10 @@
   <label>新密码（不填则不修改，最少 6 位）</label>
   <input id="setPwd" type="password" placeholder="新密码">
   <button class="save-btn" onclick="saveSettings()">保存</button>
+  <label>向站长反馈</label>
+  <textarea id="fbContent" maxlength="200" placeholder="有什么想说的..."></textarea>
+  <button class="save-btn" style="background:#9b59b6" onclick="sendFeedback()">提交反馈</button>
   <button class="del-btn" onclick="deleteAccount()">删除账号</button>
-  <button class="save-btn" style="background:#9b59b6" onclick="sendFeedback()">向站长反馈</button>
 </div>
 
 <div class="messages-page" id="messagesPage">
@@ -338,7 +361,6 @@
   <div class="btns">
     <button id="pcFollowBtn" class="follow">关注</button>
     <button id="pcFriendBtn" class="addfriend">加好友</button>
-    <button id="pcFeedbackBtn" class="feedback" style="display:none">向站长反馈</button>
     <button id="pcAdminBtn" class="grant" style="display:none">设为管理员</button>
     <button class="close-btn" onclick="closeProfile()">退出</button>
   </div>
@@ -365,6 +387,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  
 const SUPABASE_URL = "https://bzhntlpdouhwcbqcdsfj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Cwuigqfp_poxrjYjVVtJkQ_klug8TTt";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -385,7 +408,12 @@ let hiddenMsgs = JSON.parse(localStorage.getItem("hiddenMsgs") || "{}");
 if (localStorage.getItem("theme") === "dark") {
   document.documentElement.classList.add("dark");
 }
-  
+
+function closeNotice() {
+  document.getElementById("noticeModal").classList.remove("show");
+  localStorage.setItem("noticeShown", "1");
+}
+
 function toggleTheme() {
   document.documentElement.classList.toggle("dark");
   const isDark = document.documentElement.classList.contains("dark");
@@ -395,13 +423,17 @@ function toggleTheme() {
 
 window.onload = async function() {
   const { data: status } = await db.from("site_status").select("*").eq("id", 1);
-const isOpen = status && status[0] ? status[0].open : true;
-const allowList = status && status[0] && status[0].allow_codes ? status[0].allow_codes.split(",") : ["#5956"];
-const savedCode = localStorage.getItem("myCode");
+  const isOpen = status && status[0] ? status[0].open : true;
+  const allowList = status && status[0] && status[0].allow_codes ? status[0].allow_codes.split(",") : ["#5956"];
+  const savedCode = localStorage.getItem("myCode");
 
-if (!isOpen && !allowList.includes(savedCode)) {
+  if (!isOpen && !allowList.includes(savedCode)) {
     document.body.innerHTML = '<div style="text-align:center;padding:60px 20px;font-family:sans-serif"><h1>🔧 维护中</h1><p style="color:#999">本站暂时休息，请稍后再来</p></div>';
     return;
+  }
+
+  if (!localStorage.getItem("noticeShown")) {
+    document.getElementById("noticeModal").classList.add("show");
   }
 
   if (!myCode) {
@@ -425,8 +457,8 @@ async function doLogin() {
   isGuest = false;
   document.getElementById("loginPage").classList.remove("show");
   await startApp();
-}
-
+  }
+  
 async function guestLogin() {
   const code = "#" + Math.floor(1000 + Math.random() * 9000);
   const nickname = "游客" + Math.floor(1000 + Math.random() * 9000);
@@ -480,7 +512,7 @@ function openSidebar() {
 function closeSidebar() {
   document.getElementById("sidebar").classList.remove("show");
   document.getElementById("mask").classList.remove("show");
-}
+      }
   
 function openSearch() { document.getElementById("searchPage").classList.add("show"); loadHistory(); }
 function closeSearch() { document.getElementById("searchPage").classList.remove("show"); }
@@ -493,6 +525,7 @@ function openSettings() {
   document.getElementById("setGender").value = me.gender || "";
   document.getElementById("setBio").value = me.bio || "";
   document.getElementById("setPwd").value = "";
+  document.getElementById("fbContent").value = "";
   document.getElementById("settingsPage").classList.add("show");
 }
 function closeSettings() { document.getElementById("settingsPage").classList.remove("show"); }
@@ -522,6 +555,18 @@ async function saveSettings() {
   alert("保存成功");
   closeSettings();
   await loadPosts();
+}
+
+async function sendFeedback() {
+  const content = document.getElementById("fbContent").value.trim();
+  if (!content) { alert("请写点内容"); return; }
+  const { error } = await db.from("feedbacks").insert({
+    from_code: myCode, content: content, read: false
+  });
+  if (error) { alert("发送失败：" + error.message); return; }
+  alert("反馈已发送给站长");
+  document.getElementById("fbContent").value = "";
+  closeSettings();
 }
 
 async function deleteAccount() {
@@ -555,8 +600,8 @@ function adminTag(code) {
 
 async function writeLog(action, target) {
   await db.from("admin_logs").insert({ admin_code: myCode, action: action, target: target });
-}
-
+  }
+  
 function showProfile(code) {
   const u = userMap[code];
   if (!u) return;
@@ -589,9 +634,6 @@ function showProfile(code) {
     else { friendBtn.innerText = "加好友"; friendBtn.className = "addfriend"; friendBtn.onclick = async () => { await sendFriendReq(code); showProfile(code); }; }
   }
 
-  const fbBtn = document.getElementById("pcFeedbackBtn");
-fbBtn.style.display = "none";
-
   const adminBtn = document.getElementById("pcAdminBtn");
   if (isSuper && code !== myCode && !u.is_super) {
     adminBtn.style.display = "inline-block";
@@ -610,16 +652,6 @@ fbBtn.style.display = "none";
 }
 
 function closeProfile() { document.getElementById("profileCard").classList.remove("show"); }
-  
-async function sendFeedback() {
-  const content = prompt("请输入反馈内容：");
-  if (!content || !content.trim()) return;
-  const { error } = await db.from("feedbacks").insert({
-    from_code: myCode, content: content.trim(), read: false
-  });
-  if (error) { alert("发送失败：" + error.message); return; }
-  alert("反馈已发送给站长");
-}
 
 async function openFeedback() {
   closeSidebar();
@@ -666,7 +698,7 @@ async function openNotify() {
 }
 
 function closeNotify() { document.getElementById("notifyPage").classList.remove("show"); }
-
+  
 async function loadHistory() {
   const { data } = await db.from("search_history").select("*")
     .eq("user_code", myCode).order("created_at", { ascending: false }).limit(20);
@@ -733,7 +765,7 @@ async function toggleFollow(targetCode, isFollowing) {
   await loadFollows();
   await doSearch();
 }
-  
+
 async function loadFollows() {
   const { data } = await db.from("follows").select("*").eq("follower", myCode);
   followingMap = {};
@@ -762,7 +794,7 @@ async function sendFriendReq(targetCode) {
   await loadFriendData();
   await doSearch();
 }
-
+  
 async function showFollowing() {
   closeSidebar();
   const { data: posts } = await db.from("posts").select("*").order("created_at", { ascending: false });
@@ -834,7 +866,7 @@ async function showMyFavs() {
   if (ids.length === 0) { document.getElementById("list").innerText = "还没有收藏"; return; }
   const { data: posts } = await db.from("posts").select("*").in("id", ids).order("created_at", { ascending: false });
   await renderPosts(posts || []);
-    }
+  }
   
 async function renderPosts(posts) {
   const box = document.getElementById("list");
@@ -991,7 +1023,7 @@ function clearLocalChat() {
   localStorage.setItem("hiddenMsgs", JSON.stringify(hiddenMsgs));
   document.getElementById("chatBody").innerHTML = "";
   alert("已清空本地记录");
-}
+  }
   
 async function loadChat() {
   if (!chatTarget) return;
