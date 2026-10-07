@@ -527,7 +527,7 @@ function adminTag(code) {
   if (u.is_admin) return '<span class="mod-tag">🛡️ 管理员</span>';
   if (u.is_guest) return '<span class="guest-tag">游客</span>';
   return "";
-  }
+    }
   
 function showProfile(code) {
   const u = userMap[code];
@@ -672,7 +672,7 @@ async function doSearch() {
       </div>
       ${isGuest ? '' : `
         <button class="${isFollowing ?
-                   
+                         
 async function updateBadge() {
   const { data } = await db.from("friend_requests").select("*").eq("to_code", myCode).eq("status", "pending");
   const n = (data || []).length;
@@ -794,8 +794,45 @@ function switchMsgTab(tab) {
 async function loadRequests() {
   const box = document.getElementById("msgList");
   const { data } = await db.from("friend_requests").select("*").eq("to_code", myCode).eq("status", "pending");
-  if (!data || data.length === 0) { box.innerHTML = "<p style='color:#999'>暂无好友申请</p>";
-                                   
+  if (!data || data.length === 0) { box.innerHTML = "<p style='color:#999'>暂无好友申请</p>";return; }
+  box.innerHTML = "";
+  data.forEach(r => {
+    const u = userMap[r.from_code] || { nickname: "未知", avatar: "" };
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}" onclick="showProfile('${r.from_code}')">
+      <div class="info" onclick="showProfile('${r.from_code}')"><div class="name">${u.nickname}</div><div class="code">${r.from_code}</div></div>
+      <button class="addfriend" onclick="acceptReq(${r.id}, '${r.from_code}')">同意</button>
+      <button class="already" onclick="rejectReq(${r.id})">拒绝</button>
+    `;
+    box.appendChild(div);
+  });
+}
+
+async function acceptReq(id, fromCode) { await db.from("friend_requests").update({ status: "accepted" }).eq("id", id); await loadFriendData(); await loadRequests(); alert("已同意"); }
+async function rejectReq(id) { await db.from("friend_requests").delete().eq("id", id); await loadRequests(); updateBadge(); }
+
+async function loadChats() {
+  const box = document.getElementById("msgList");
+  const { data } = await db.from("messages").select("*");
+  const partners = new Set();
+  (data || []).forEach(m => { if (m.from_code === myCode) partners.add(m.to_code); if (m.to_code === myCode) partners.add(m.from_code); });
+  if (partners.size === 0) { box.innerHTML = "<p style='color:#999'>暂无私信</p>"; return; }
+  box.innerHTML = "";
+  partners.forEach(code => {
+    const u = userMap[code] || { nickname: "未知", avatar: "" };
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}" onclick="showProfile('${code}')">
+      <div class="info" onclick="showProfile('${code}')"><div class="name">${u.nickname}</div><div class="code">${code}</div></div>
+      <button class="follow" onclick="openChat('${code}')">聊天</button>
+    `;
+    box.appendChild(div);
+  });
+  }
+  
 async function openChat(targetCode) {
   if (blockMap[targetCode]) { alert("你已拉黑对方"); return; }
   chatTarget = targetCode;
@@ -925,8 +962,8 @@ async function revokeAdmin(code) {
   await loadPosts();
   await openAdminPanel();
   alert("已撤销");
-        }
-                                   
+}
+  
 async function openComments(postId) {
   currentPostId = postId;
   document.getElementById("overlay").classList.add("show");
@@ -1019,3 +1056,4 @@ function escapeHtml(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").rep
 </script>
 </body>
 </html>
+                                  
