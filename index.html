@@ -124,7 +124,7 @@
 .login-page button { width: 100%; padding: 12px; font-size: 16px; background: #4a90e2;
                      color: #fff; border: none; border-radius: 8px; margin-bottom: 10px; }
 .login-page .guest-btn { background: #888; }
-
+  
 .settings-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 45;
                  display: none; flex-direction: column; padding: 16px; overflow-y: auto; }
 .settings-page.show { display: flex; }
@@ -147,31 +147,31 @@
 .tab-row div { flex: 1; text-align: center; padding: 8px; border-radius: 8px;
                background: var(--border); cursor: pointer; }
 .tab-row div.active { background: #4a90e2; color: #fff; }
-  
-  .chat-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 55;
-               display: none; flex-direction: column; }
-  .chat-page.show { display: flex; }
-  .chat-head { display: flex; align-items: center; gap: 8px; padding: 10px;
-               border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-  .chat-head button { font-size: 14px; background: none; border: none; cursor: pointer;
-                      color: var(--fg); padding: 4px 8px; border-radius: 6px; }
-  .chat-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-               padding: 10px; }
-  .msg { margin: 6px 0; display: flex; }
-  .msg.mine { justify-content: flex-end; }
-  .msg .bubble { max-width: 70%; padding: 8px 12px; border-radius: 14px;
-                 background: #4a90e2; color: #fff; word-break: break-word; }
-  .msg.theirs .bubble { background: var(--border); color: var(--fg); }
-  .msg .bubble img { max-width: 100%; border-radius: 8px; margin-top: 6px; }
-  .chat-input { display: flex; gap: 6px; padding: 10px; border-top: 1px solid var(--border); }
-  .chat-input input[type=text] { flex: 1; padding: 10px; font-size: 15px;
-                                 border: 1px solid var(--border); border-radius: 20px;
-                                 background: var(--card); color: var(--fg); margin-top: 0; }
-  .chat-input button { padding: 8px 14px; font-size: 15px; background: #4a90e2;
-                       color: #fff; border: none; border-radius: 20px; }
-  .chat-input label { padding: 8px; font-size: 20px; cursor: pointer; }
-  .chat-input input[type=file] { display: none; }
 
+.chat-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 55;
+             display: none; flex-direction: column; }
+.chat-page.show { display: flex; }
+.chat-head { display: flex; align-items: center; gap: 8px; padding: 10px;
+             border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.chat-head button { font-size: 14px; background: none; border: none; cursor: pointer;
+                    color: var(--fg); padding: 4px 8px; border-radius: 6px; }
+.chat-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+             padding: 10px; }
+.msg { margin: 6px 0; display: flex; }
+.msg.mine { justify-content: flex-end; }
+.msg .bubble { max-width: 70%; padding: 8px 12px; border-radius: 14px;
+               background: #4a90e2; color: #fff; word-break: break-word; }
+.msg.theirs .bubble { background: var(--border); color: var(--fg); }
+.msg .bubble img { max-width: 100%; border-radius: 8px; margin-top: 6px; }
+.chat-input { display: flex; gap: 6px; padding: 10px; border-top: 1px solid var(--border); }
+.chat-input input[type=text] { flex: 1; padding: 10px; font-size: 15px;
+                               border: 1px solid var(--border); border-radius: 20px;
+                               background: var(--card); color: var(--fg); margin-top: 0; }
+.chat-input button { padding: 8px 14px; font-size: 15px; background: #4a90e2;
+                     color: #fff; border: none; border-radius: 20px; }
+.chat-input label { padding: 8px; font-size: 20px; cursor: pointer; }
+.chat-input input[type=file] { display: none; }
+  
   .profile-card { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
                   background: var(--card); color: var(--fg); border-radius: 14px;
                   padding: 24px; z-index: 60; text-align: center; width: 300px;
@@ -198,10 +198,14 @@
                 display: none; flex-direction: column; padding: 16px; overflow-y: auto; }
   .admin-page.show { display: flex; }
   .admin-page h2 { text-align: center; }
+
+  .log-item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .log-item .who { font-weight: bold; }
+  .log-item .time { color: var(--gray); font-size: 12px; margin-top: 4px; }
 </style>
 </head>
 <body>
-  
+
 <div class="top-bar">
   <button class="icon-btn" onclick="openSidebar()">⚙️</button>
   <h1 style="flex:1;text-align:center;margin:0;">主页</h1>
@@ -245,6 +249,7 @@
   <div class="menu-item" onclick="openSettings()">设置</div>
   <div class="menu-item" onclick="openMessages()">消息<span id="msgBadge" class="badge" style="display:none">0</span></div>
   <div class="menu-item" id="adminMenu" style="display:none" onclick="openAdminPanel()">管理</div>
+  <div class="menu-item" id="notifyMenu" style="display:none" onclick="openNotify()">通知<span id="notifyBadge" class="badge" style="display:none">0</span></div>
   <div class="menu-item" id="fbMenu" style="display:none" onclick="openFeedback()">用户反馈<span id="fbBadge" class="badge" style="display:none">0</span></div>
   <div class="menu-item" style="color:#c62828" onclick="logout()">退出登录</div>
 </div>
@@ -344,6 +349,12 @@
   <div id="adminList"></div>
 </div>
 
+<div class="admin-page" id="notifyPage">
+  <button class="close" onclick="closeNotify()">✕</button>
+  <h2>通知</h2>
+  <div id="notifyList"></div>
+</div>
+
 <div class="profile-card" id="feedbackPanel" style="width:320px;text-align:left">
   <h3 style="text-align:center;margin-top:0">用户反馈</h3>
   <div id="feedbackList"></div>
@@ -352,7 +363,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  
 const SUPABASE_URL = "https://bzhntlpdouhwcbqcdsfj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Cwuigqfp_poxrjYjVVtJkQ_klug8TTt";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -374,7 +384,7 @@ let hiddenMsgs = JSON.parse(localStorage.getItem("hiddenMsgs") || "{}");
 if (localStorage.getItem("theme") === "dark") {
   document.documentElement.classList.add("dark");
 }
-
+  
 function toggleTheme() {
   document.documentElement.classList.toggle("dark");
   const isDark = document.documentElement.classList.contains("dark");
@@ -421,8 +431,11 @@ async function guestLogin() {
   await startApp();
 }
 
-function logout() {
+async function logout() {
   if (!confirm("确定退出登录？")) return;
+  if (isGuest) {
+    await db.from("users").delete().eq("code", myCode);
+  }
   localStorage.removeItem("myCode");
   localStorage.removeItem("isGuest");
   location.reload();
@@ -436,7 +449,7 @@ async function startApp() {
   if (me && me[0]) {
     isGuest = me[0].is_guest === true;
     if (me[0].is_admin) { isAdmin = true; document.getElementById("adminMenu").style.display = "block"; }
-    if (me[0].is_super) { isSuper = true; document.getElementById("fbMenu").style.display = "block"; }
+    if (me[0].is_super) { isSuper = true; document.getElementById("notifyMenu").style.display = "block"; document.getElementById("fbMenu").style.display = "block"; }
   }
   await loadFollows();
   await loadFriendData();
@@ -456,8 +469,8 @@ function openSidebar() {
 function closeSidebar() {
   document.getElementById("sidebar").classList.remove("show");
   document.getElementById("mask").classList.remove("show");
-}
-
+  }
+  
 function openSearch() { document.getElementById("searchPage").classList.add("show"); loadHistory(); }
 function closeSearch() { document.getElementById("searchPage").classList.remove("show"); }
 
@@ -527,6 +540,10 @@ function adminTag(code) {
   if (u.is_admin) return '<span class="mod-tag">🛡️ 管理员</span>';
   if (u.is_guest) return '<span class="guest-tag">游客</span>';
   return "";
+}
+
+async function writeLog(action, target) {
+  await db.from("admin_logs").insert({ admin_code: myCode, action: action, target: target });
     }
   
 function showProfile(code) {
@@ -622,6 +639,28 @@ async function openFeedback() {
 
 function closeFeedback() { document.getElementById("feedbackPanel").classList.remove("show"); }
 
+async function openNotify() {
+  closeSidebar();
+  const box = document.getElementById("notifyList");
+  const { data } = await db.from("admin_logs").select("*").order("created_at", { ascending: false }).limit(50);
+  if (!data || data.length === 0) box.innerHTML = "<p style='color:#999;font-size:13px'>暂无通知</p>";
+  else {
+    box.innerHTML = "";
+    data.forEach(l => {
+      const u = userMap[l.admin_code] || { nickname: "未知" };
+      const div = document.createElement("div");
+      div.className = "log-item";
+      div.innerHTML = `<div class="who">${u.nickname} ${l.admin_code}</div>
+                       <div>${escapeHtml(l.action)}${l.target ? "：" + escapeHtml(l.target) : ""}</div>
+                       <div class="time">${new Date(l.created_at + "Z").toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>`;
+      box.appendChild(div);
+    });
+  }
+  document.getElementById("notifyPage").classList.add("show");
+}
+
+function closeNotify() { document.getElementById("notifyPage").classList.remove("show"); }
+  
 async function loadHistory() {
   const { data } = await db.from("search_history").select("*")
     .eq("user_code", myCode).order("created_at", { ascending: false }).limit(20);
@@ -671,8 +710,65 @@ async function doSearch() {
         <div class="code">${u.code}</div>
       </div>
       ${isGuest ? '' : `
-        <button class="${isFollowing ?
-                         
+        <button class="${isFollowing ? 'unfollow' : 'follow'}" onclick="toggleFollow('${u.code}', ${!!isFollowing})">${isFollowing ? '已关注' : '关注'}</button>
+        ${blocked ? `<button class="already">已拉黑</button>` :
+          isFriend ? `<button class="unfollow" onclick="openChat('${u.code}')">私信</button>` :
+          reqSent ? `<button class="already">已申请</button>` :
+          `<button class="addfriend" onclick="sendFriendReq('${u.code}')">加好友</button>`}
+      `}
+    `;
+    box.appendChild(div);
+  });
+}
+
+async function toggleFollow(targetCode, isFollowing) {
+  if (isFollowing) await db.from("follows").delete().eq("follower", myCode).eq("following", targetCode);
+  else await db.from("follows").insert({ follower: myCode, following: targetCode });
+  await loadFollows();
+  await doSearch();
+}
+
+async function loadFollows() {
+  const { data } = await db.from("follows").select("*").eq("follower", myCode);
+  followingMap = {};
+  (data || []).forEach(f => followingMap[f.following] = true);
+}
+
+async function loadFriendData() {
+  friendMap = { pending: {} }; blockMap = {};
+  const { data: reqs } = await db.from("friend_requests").select("*");
+  (reqs || []).forEach(r => {
+    if (r.status === "accepted") {
+      if (r.from_code === myCode) friendMap[r.to_code] = true;
+      if (r.to_code === myCode) friendMap[r.from_code] = true;
+    }
+    if (r.status === "pending" && r.from_code === myCode) friendMap.pending[r.to_code] = true;
+  });
+  const { data: blocks } = await db.from("blocks").select("*").eq("blocker", myCode);
+  (blocks || []).forEach(b => blockMap[b.blocked] = true);
+}
+
+async function sendFriendReq(targetCode) {
+  if (blockMap[targetCode]) { alert("你已拉黑对方"); return; }
+  const { error } = await db.from("friend_requests").insert({ from_code: myCode, to_code: targetCode, status: "pending" });
+  if (error) { alert("申请失败：" + error.message); return; }
+  alert("申请已发送");
+  await loadFriendData();
+  await doSearch();
+}
+
+async function showFollowing() {
+  closeSidebar();
+  const { data: posts } = await db.from("posts").select("*").order("created_at", { ascending: false });
+  const list = (posts || []).filter(p => followingMap[p.user_code]);
+  const box = document.getElementById("list");
+  if (list.length === 0) { box.innerHTML = "<p style='color:#999;padding:20px;text-align:center'>你关注的人还没有发帖</p>"; return; }
+  const { data: users } = await db.from("users").select("*");
+  userMap = {};
+  (users || []).forEach(u => userMap[u.code] = u);
+  await renderPosts(list);
+}
+
 async function updateBadge() {
   const { data } = await db.from("friend_requests").select("*").eq("to_code", myCode).eq("status", "pending");
   const n = (data || []).length;
@@ -689,6 +785,15 @@ async function updateBadge() {
     if (fn > 0) { fbadge.style.display = "inline-block"; fbadge.innerText = fn; }
     else fbadge.style.display = "none";
   }
+  if (isSuper) {
+    const { data: logs } = await db.from("admin_logs").select("*");
+    const ln = (logs || []).length;
+    const lastSeen = Number(localStorage.getItem("lastLogSeen") || 0);
+    const newLogs = Math.max(0, ln - lastSeen);
+    const nbadge = document.getElementById("notifyBadge");
+    if (newLogs > 0) { nbadge.style.display = "inline-block"; nbadge.innerText = newLogs; }
+    else nbadge.style.display = "none";
+  }
   const { data: allPosts } = await db.from("posts").select("*").order("created_at", { ascending: false });
   const { data: seen } = await db.from("last_seen").select("*").eq("user_code", myCode);
   const lastView = seen && seen[0] ? new Date(seen[0].last_viewed + "Z") : new Date(0);
@@ -696,8 +801,8 @@ async function updateBadge() {
   const fbadge2 = document.getElementById("followBadge");
   if (newFollowed > 0) { fbadge2.style.display = "inline-block"; fbadge2.innerText = newFollowed; }
   else fbadge2.style.display = "none";
-}
-
+    }
+  
 async function loadPosts() {
   const { data: posts, error } = await db.from("posts").select("*").order("created_at", { ascending: false });
   const box = document.getElementById("list");
@@ -763,26 +868,39 @@ async function renderPosts(posts) {
         </button>
         <button class="cmt-btn" onclick="openComments(${p.id})">💬 <span>${cmtCount}</span></button>
         <button class="cmt-btn" onclick="${isGuest ? 'alert(\"游客不能收藏\")' : `toggleFav(${p.id}, ${favedByMe})`}">${favedByMe ? '⭐' : '☆'}</button>
-        ${canDel ? `<button class="cmt-btn" onclick="delPost(${p.id})">... </button>` : ""}
-        ${isAdmin ? `<button class="cmt-btn" onclick="toggleHide(${p.id}, ${!!p.hidden})">${p.hidden ? '显示' : '隐藏'}</button>` : ""}
+        ${canDel ? `<button class="cmt-btn" onclick="delPost(${p.id}, '${escapeHtml(p.content).slice(0,20)}')">... </button>` : ""}
+        ${isAdmin ? `<button class="cmt-btn" onclick="toggleHide(${p.id}, ${!!p.hidden}, '${escapeHtml(p.content).slice(0,20)}')">${p.hidden ? '显示' : '隐藏'}</button>` : ""}
       </div>
     `;
     box.appendChild(div);
   });
 }
 
-async function toggleHide(postId, hidden) { await db.from("posts").update({ hidden: !hidden }).eq("id", postId); loadPosts(); }
+async function toggleHide(postId, hidden, content) {
+  await db.from("posts").update({ hidden: !hidden }).eq("id", postId);
+  await writeLog(hidden ? "显示帖子" : "隐藏帖子", content);
+  loadPosts();
+}
+
 async function toggleLike(postId, liked) {
   if (liked) await db.from("likes").delete().eq("post_id", postId).eq("user_code", myCode);
   else await db.from("likes").insert({ post_id: postId, user_code: myCode });
   loadPosts();
 }
+
 async function toggleFav(postId, faved) {
   if (faved) await db.from("favorites").delete().eq("post_id", postId).eq("user_code", myCode);
   else await db.from("favorites").insert({ post_id: postId, user_code: myCode });
   loadPosts();
 }
 
+async function delPost(id, content) {
+  if (!confirm("确定删除这条帖子？")) return;
+  await db.from("posts").delete().eq("id", id);
+  if (isAdmin) await writeLog("删除帖子", content || "");
+  loadPosts();
+}
+  
 function openMessages() { closeSidebar(); document.getElementById("messagesPage").classList.add("show"); switchMsgTab("req"); }
 function closeMessages() { document.getElementById("messagesPage").classList.remove("show"); updateBadge(); }
 function switchMsgTab(tab) {
@@ -794,7 +912,7 @@ function switchMsgTab(tab) {
 async function loadRequests() {
   const box = document.getElementById("msgList");
   const { data } = await db.from("friend_requests").select("*").eq("to_code", myCode).eq("status", "pending");
-  if (!data || data.length === 0) { box.innerHTML = "<p style='color:#999'>暂无好友申请</p>";return; }
+  if (!data || data.length === 0) { box.innerHTML = "<p style='color:#999'>暂无好友申请</p>"; return; }
   box.innerHTML = "";
   data.forEach(r => {
     const u = userMap[r.from_code] || { nickname: "未知", avatar: "" };
@@ -831,8 +949,8 @@ async function loadChats() {
     `;
     box.appendChild(div);
   });
-  }
-  
+}
+
 async function openChat(targetCode) {
   if (blockMap[targetCode]) { alert("你已拉黑对方"); return; }
   chatTarget = targetCode;
@@ -927,11 +1045,8 @@ async function unfriend() {
 async function blockUser() {
   if (!confirm("拉黑对方？")) return;
   await db.from("blocks").insert({ blocker: myCode, blocked: chatTarget });
-  await loadFriendData();
-  closeChat();
-  alert("已拉黑");
-}
-
+  await load
+  
 async function openAdminPanel() {
   closeSidebar();
   const box = document.getElementById("adminList");
@@ -963,7 +1078,7 @@ async function revokeAdmin(code) {
   await openAdminPanel();
   alert("已撤销");
 }
-  
+
 async function openComments(postId) {
   currentPostId = postId;
   document.getElementById("overlay").classList.add("show");
@@ -1027,7 +1142,6 @@ async function sendComment() {
 
 async function delComment(id) { await db.from("comments").delete().eq("id", id); await loadComments(); }
 function closeComments() { document.getElementById("overlay").classList.remove("show"); currentPostId = null; loadPosts(); }
-async function delPost(id) { if (!confirm("确定删除这条帖子？")) return; await db.from("posts").delete().eq("id", id); loadPosts(); }
 
 async function postIt() {
   if (isGuest) { alert("游客不能发帖"); return; }
@@ -1056,4 +1170,3 @@ function escapeHtml(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").rep
 </script>
 </body>
 </html>
-                                  
