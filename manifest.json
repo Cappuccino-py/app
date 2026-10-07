@@ -1,0 +1,16 @@
+{
+  "name": "卡布奇诺站",
+  "short_name": "卡布",
+  "start_url": "/app/",
+  "scope": "/app/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4a90e2",
+  "icons": [
+    {
+      "src": "https://cappuccino-py.github.io/app/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
