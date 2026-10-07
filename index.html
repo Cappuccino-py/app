@@ -395,10 +395,11 @@ function toggleTheme() {
 
 window.onload = async function() {
   const { data: status } = await db.from("site_status").select("*").eq("id", 1);
-  const isOpen = status && status[0] ? status[0].open : true;
-  const savedCode = localStorage.getItem("myCode");
+const isOpen = status && status[0] ? status[0].open : true;
+const allowList = status && status[0] && status[0].allow_codes ? status[0].allow_codes.split(",") : ["#5956"];
+const savedCode = localStorage.getItem("myCode");
 
-  if (!isOpen && savedCode !== "#5956") {
+if (!isOpen && !allowList.includes(savedCode)) {
     document.body.innerHTML = '<div style="text-align:center;padding:60px 20px;font-family:sans-serif"><h1>🔧 维护中</h1><p style="color:#999">本站暂时休息，请稍后再来</p></div>';
     return;
   }
