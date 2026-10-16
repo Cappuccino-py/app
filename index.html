@@ -144,86 +144,6 @@
 </head>
 <body>
   
-.settings-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 45;
-                 display: none; flex-direction: column; padding: 16px; overflow-y: auto; }
-.settings-page.show { display: flex; }
-.settings-page label { font-size: 14px; color: var(--gray); margin-top: 12px; display: block; }
-.settings-page input, .settings-page select, .settings-page textarea {
-  width: 100%; padding: 10px; font-size: 15px;
-  border: 1px solid var(--border); border-radius: 8px; margin-top: 4px;
-  background: var(--card); color: var(--fg);
-}
-.settings-page .save-btn { background: #4a90e2; color: #fff; padding: 12px;
-                           border: none; border-radius: 8px; margin-top: 20px; font-size: 16px; width: 100%; }
-.settings-page .del-btn { background: #c62828; color: #fff; padding: 12px;
-                          border: none; border-radius: 8px; margin-top: 30px; font-size: 16px; width: 100%; }
-
-.messages-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 50;
-                 display: none; flex-direction: column; padding: 12px; overflow-y: auto; }
-.messages-page.show { display: flex; }
-.messages-page h2 { text-align: center; margin: 8px 0; }
-.tab-row { display: flex; gap: 6px; margin: 10px 0; }
-.tab-row div { flex: 1; text-align: center; padding: 8px; border-radius: 8px;
-               background: var(--border); cursor: pointer; }
-.tab-row div.active { background: #4a90e2; color: #fff; }
-
-.chat-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 55;
-             display: none; flex-direction: column; }
-.chat-page.show { display: flex; }
-.chat-head { display: flex; align-items: center; gap: 8px; padding: 10px;
-             border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-.chat-head button { font-size: 14px; background: none; border: none; cursor: pointer;
-                    color: var(--fg); padding: 4px 8px; border-radius: 6px; }
-.chat-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-             padding: 10px; }
-.msg { margin: 6px 0; display: flex; }
-.msg.mine { justify-content: flex-end; }
-.msg .bubble { max-width: 70%; padding: 8px 12px; border-radius: 14px;
-               background: #4a90e2; color: #fff; word-break: break-word; }
-.msg.theirs .bubble { background: var(--border); color: var(--fg); }
-.msg .bubble img { max-width: 100%; border-radius: 8px; margin-top: 6px; }
-.chat-input { display: flex; gap: 6px; padding: 10px; border-top: 1px solid var(--border); }
-.chat-input input[type=text] { flex: 1; padding: 10px; font-size: 15px;
-                               border: 1px solid var(--border); border-radius: 20px;
-                               background: var(--card); color: var(--fg); margin-top: 0; }
-.chat-input button { padding: 8px 14px; font-size: 15px; background: #4a90e2;
-                     color: #fff; border: none; border-radius: 20px; }
-.chat-input label { padding: 8px; font-size: 20px; cursor: pointer; }
-.chat-input input[type=file] { display: none; }
-  
-  .profile-card { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                  background: var(--card); color: var(--fg); border-radius: 14px;
-                  padding: 24px; z-index: 60; text-align: center; width: 300px;
-                  box-shadow: 0 4px 20px rgba(0,0,0,.25); display: none; max-height: 80vh; overflow-y: auto; }
-  .profile-card.show { display: block; }
-  .profile-card img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
-  .profile-card .name { font-weight: bold; font-size: 18px; margin-top: 10px; }
-  .profile-card .code { color: var(--gray); font-size: 13px; margin-top: 4px; }
-  .profile-card .gender { color: var(--gray); font-size: 13px; margin-top: 4px; }
-  .profile-card .bio { margin-top: 12px; font-size: 14px; line-height: 1.6;
-                       color: var(--gray); padding: 0 8px; }
-  .profile-card .btns { display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
-  .profile-card .btns button { padding: 8px 18px; border-radius: 20px; border: none; cursor: pointer; font-size: 14px; }
-  .profile-card .btns .follow { background: #4a90e2; color: #fff; }
-  .profile-card .btns .unfollow { background: var(--border); color: var(--fg); }
-  .profile-card .btns .addfriend { background: #2ecc71; color: #fff; }
-  .profile-card .btns .already { background: var(--border); color: var(--gray); }
-  .profile-card .btns .close-btn { background: var(--border); color: var(--fg); }
-  .profile-card .btns .grant { background: #f1c40f; color: #000; }
-  .profile-card .btns .revoke { background: #e67e22; color: #fff; }
-
-  .admin-page { position: fixed; inset: 0; background: var(--bg); color: var(--fg); z-index: 65;
-                display: none; flex-direction: column; padding: 16px; overflow-y: auto; }
-  .admin-page.show { display: flex; }
-  .admin-page h2 { text-align: center; }
-
-  .log-item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-  .log-item .who { font-weight: bold; }
-  .log-item .time { color: var(--gray); font-size: 12px; margin-top: 4px; }
-</style>
-</head>
-<body>
-
 <div class="notice-modal" id="noticeModal">
   <div class="notice-box">
     <h3>👋 欢迎来到小破站</h3>
@@ -283,8 +203,8 @@
   <div class="menu-item" id="notifyMenu" style="display:none" onclick="openNotify()">通知<span id="notifyBadge" class="badge" style="display:none">0</span></div>
   <div class="menu-item" id="fbMenu" style="display:none" onclick="openFeedback()">用户反馈<span id="fbBadge" class="badge" style="display:none">0</span></div>
   <div class="menu-item" style="color:#c62828" onclick="logout()">退出登录</div>
-                                                                                                                     </div>
-  
+</div>
+
 <div class="search-page" id="searchPage">
   <button class="close" onclick="closeSearch()">✕</button>
   <div class="search-bar">
@@ -319,103 +239,105 @@
   <div id="announceList"></div>
 </div>
 
-<div class="settings-page" id="settingsPage">
+<div class="settings-page" id="settingsPage" style="position:fixed;inset:0;background:var(--bg);color:var(--fg);z-index:45;display:none;flex-direction:column;padding:16px;overflow-y:auto">
   <button class="close" onclick="closeSettings()">✕</button>
   <h2>设置</h2>
   <img id="setAvatar" style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;margin:10px auto;">
-  <label>头像（从相册上传）</label>
+  <label style="font-size:14px;color:var(--gray);margin-top:12px;display:block">头像（从相册上传）</label>
   <input type="file" id="setAvatarFile" accept="image/*">
-  <label>名字</label>
+  <label style="font-size:14px;color:var(--gray);margin-top:12px;display:block">名字</label>
   <input id="setName" maxlength="20">
-  <label>性别</label>
+  <label style="font-size:14px;color:var(--gray);margin-top:12px;display:block">性别</label>
   <select id="setGender">
     <option value="">不选</option>
     <option value="男">男</option>
     <option value="女">女</option>
   </select>
-  <label>个人介绍（最多 50 字，选填）</label>
+  <label style="font-size:14px;color:var(--gray);margin-top:12px;display:block">个人介绍（最多 50 字，选填）</label>
   <textarea id="setBio" maxlength="50"></textarea>
-  <label>新密码（不填则不修改，最少 6 位）</label>
+  <label style="font-size:14px;color:var(--gray);margin-top:12px;display:block">新密码（不填则不修改，最少 6 位）</label>
   <input id="setPwd" type="password" placeholder="新密码">
-  <label>新邮箱（不填则不修改）</label>
+  <label style="font-size:14px;color:var(--gray);margin-top:12px;display:block">新邮箱（不填则不修改）</label>
   <input type="email" id="setEmail" placeholder="新邮箱">
-  <label>邮箱验证码</label>
+  <label style="font-size:14px;color:var(--gray);margin-top:12px;display:block">邮箱验证码</label>
   <input type="text" id="setEmailCode" placeholder="6 位验证码">
   <button type="button" onclick="sendCodeForEmail()" style="background:#888;padding:10px;border:none;border-radius:8px;color:#fff;font-size:14px;margin-top:6px;">发送验证码</button>
-  <button class="save-btn" onclick="saveSettings()">保存</button>
-  <label>向站长反馈</label>
+  <button class="save-btn" style="background:#4a90e2;color:#fff;padding:12px;border:none;border-radius:8px;margin-top:20px;font-size:16px;width:100%" onclick="saveSettings()">保存</button>
+  <label style="font-size:14px;color:var(--gray);margin-top:12px;display:block">向站长反馈</label>
   <textarea id="fbContent" maxlength="200" placeholder="有什么想说的..."></textarea>
-  <button class="save-btn" style="background:#9b59b6" onclick="sendFeedback()">提交反馈</button>
-  <button class="del-btn" onclick="deleteAccount()">删除账号</button>
+  <button class="save-btn" style="background:#9b59b6;color:#fff;padding:12px;border:none;border-radius:8px;margin-top:20px;font-size:16px;width:100%" onclick="sendFeedback()">提交反馈</button>
+  <button class="del-btn" style="background:#c62828;color:#fff;padding:12px;border:none;border-radius:8px;margin-top:30px;font-size:16px;width:100%" onclick="deleteAccount()">删除账号</button>
 </div>
 
-<div class="messages-page" id="messagesPage">
+<div class="messages-page" id="messagesPage" style="position:fixed;inset:0;background:var(--bg);color:var(--fg);z-index:50;display:none;flex-direction:column;padding:12px;overflow-y:auto">
   <button class="close" onclick="closeMessages()">✕</button>
-  <h2>消息</h2>
-  <div class="tab-row">
-    <div id="tabReq" class="active" onclick="switchMsgTab('req')">好友申请</div>
-    <div id="tabChat" onclick="switchMsgTab('chat')">私信</div>
+  <h2 style="text-align:center;margin:8px 0">消息</h2>
+  <div class="tab-row" style="display:flex;gap:6px;margin:10px 0">
+    <div id="tabReq" class="active" style="flex:1;text-align:center;padding:8px;border-radius:8px;background:#4a90e2;color:#fff;cursor:pointer" onclick="switchMsgTab('req')">好友申请</div>
+    <div id="tabChat" style="flex:1;text-align:center;padding:8px;border-radius:8px;background:var(--border);cursor:pointer" onclick="switchMsgTab('chat')">私信</div>
   </div>
   <div id="msgList"></div>
 </div>
 
-<div class="chat-page" id="chatPage">
-  <div class="chat-head">
-    <button onclick="closeChat()">←</button>
+<div class="chat-page" id="chatPage" style="position:fixed;inset:0;background:var(--bg);color:var(--fg);z-index:55;display:none;flex-direction:column">
+  <div class="chat-head" style="display:flex;align-items:center;gap:8px;padding:10px;border-bottom:1px solid var(--border);flex-wrap:wrap">
+    <button style="font-size:14px;background:none;border:none;cursor:pointer;color:var(--fg);padding:4px 8px" onclick="closeChat()">←</button>
     <span id="chatName"></span>
-    <button onclick="unfriend()">删除好友</button>
-    <button style="color:#c62828;" onclick="blockUser()">拉黑</button>
-    <button onclick="clearLocalChat()">清空</button>
+    <button style="font-size:14px;background:none;border:none;cursor:pointer;color:var(--fg);padding:4px 8px" onclick="unfriend()">删除好友</button>
+    <button style="font-size:14px;color:#c62828;background:none;border:none;cursor:pointer;padding:4px 8px" onclick="blockUser()">拉黑</button>
+    <button style="font-size:14px;background:none;border:none;cursor:pointer;color:var(--fg);padding:4px 8px" onclick="clearLocalChat()">清空</button>
   </div>
-  <div class="chat-body" id="chatBody"></div>
-  <div class="chat-input">
-    <label for="chatImage">🖼️</label>
-    <input type="file" id="chatImage" accept="image/*">
-    <input type="text" id="chatText" placeholder="说点什么...">
-    <button onclick="sendChat()">发送</button>
-  </div>
-</div>
-
-<div class="profile-card" id="profileCard">
-  <img id="pcAvatar" src="">
-  <div class="name" id="pcName"></div>
-  <div class="code" id="pcCode"></div>
-  <div class="gender" id="pcGender"></div>
-  <div class="bio" id="pcBio"></div>
-  <div class="btns">
-    <button id="pcFollowBtn" class="follow">关注</button>
-    <button id="pcFriendBtn" class="addfriend">加好友</button>
-    <button id="pcAdminBtn" class="grant" style="display:none">设为管理员</button>
-    <button class="close-btn" onclick="closeProfile()">退出</button>
+  <div class="chat-body" id="chatBody" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px"></div>
+  <div class="chat-input" style="display:flex;gap:6px;padding:10px;border-top:1px solid var(--border)">
+    <label for="chatImage" style="padding:8px;font-size:20px;cursor:pointer">🖼️</label>
+    <input type="file" id="chatImage" accept="image/*" style="display:none">
+    <input type="text" id="chatText" placeholder="说点什么..." style="flex:1;padding:10px;font-size:15px;border:1px solid var(--border);border-radius:20px;background:var(--card);color:var(--fg);margin-top:0">
+    <button style="padding:8px 14px;font-size:15px;background:#4a90e2;color:#fff;border:none;border-radius:20px" onclick="sendChat()">发送</button>
   </div>
 </div>
 
-<div class="admin-page" id="adminPage">
+<div class="profile-card" id="profileCard" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);color:var(--fg);border-radius:14px;padding:24px;z-index:60;text-align:center;width:300px;box-shadow:0 4px 20px rgba(0,0,0,.25);display:none;max-height:80vh;overflow-y:auto">
+  <img id="pcAvatar" src="" style="width:80px;height:80px;border-radius:50%;object-fit:cover">
+  <div class="name" id="pcName" style="font-weight:bold;font-size:18px;margin-top:10px"></div>
+  <div class="code" id="pcCode" style="color:var(--gray);font-size:13px;margin-top:4px"></div>
+  <div class="gender" id="pcGender" style="color:var(--gray);font-size:13px;margin-top:4px"></div>
+  <div class="bio" id="pcBio" style="margin-top:12px;font-size:14px;line-height:1.6;color:var(--gray);padding:0 8px"></div>
+  <div class="btns" style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap">
+    <button id="pcFollowBtn" class="follow" style="padding:8px 18px;border-radius:20px;border:none;cursor:pointer;font-size:14px;background:#4a90e2;color:#fff">关注</button>
+    <button id="pcFriendBtn" class="addfriend" style="padding:8px 18px;border-radius:20px;border:none;cursor:pointer;font-size:14px;background:#2ecc71;color:#fff">加好友</button>
+    <button id="pcAdminBtn" class="grant" style="display:none;padding:8px 18px;border-radius:20px;border:none;cursor:pointer;font-size:14px;background:#f1c40f;color:#000">设为管理员</button>
+    <button class="close-btn" style="padding:8px 18px;border-radius:20px;border:none;cursor:pointer;font-size:14px;background:var(--border);color:var(--fg)" onclick="closeProfile()">退出</button>
+  </div>
+</div>
+
+<div class="admin-page" id="adminPage" style="position:fixed;inset:0;background:var(--bg);color:var(--fg);z-index:65;display:none;flex-direction:column;padding:16px;overflow-y:auto">
   <button class="close" onclick="closeAdminPanel()">✕</button>
-  <h2>管理</h2>
+  <h2 style="text-align:center">管理</h2>
   <h4>已授权管理员</h4>
   <div id="adminList"></div>
 </div>
 
-<div class="admin-page" id="notifyPage">
+<div class="admin-page" id="notifyPage" style="position:fixed;inset:0;background:var(--bg);color:var(--fg);z-index:65;display:none;flex-direction:column;padding:16px;overflow-y:auto">
   <button class="close" onclick="closeNotify()">✕</button>
-  <h2>通知</h2>
+  <h2 style="text-align:center">通知</h2>
   <div id="notifyList"></div>
 </div>
 
 <div class="profile-card" id="feedbackPanel" style="width:320px;text-align:left">
   <h3 style="text-align:center;margin-top:0">用户反馈</h3>
   <div id="feedbackList"></div>
-  <div class="btns"><button class="close-btn" onclick="closeFeedback()">关闭</button></div>
+  <div class="btns" style="display:flex;gap:8px;justify-content:center;margin-top:16px">
+    <button class="close-btn" style="padding:8px 18px;border-radius:20px;border:none;cursor:pointer;font-size:14px;background:var(--border);color:var(--fg)" onclick="closeFeedback()">关闭</button>
+  </div>
 </div>
 
-<div class="admin-page" id="focusPage">
+<div class="admin-page" id="focusPage" style="position:fixed;inset:0;background:var(--bg);color:var(--fg);z-index:65;display:none;flex-direction:column;padding:16px;overflow-y:auto">
   <button class="close" onclick="closeFocus()">✕</button>
-  <h2>🎯 学习专注</h2>
+  <h2 style="text-align:center">🎯 学习专注</h2>
   <div style="text-align:center;padding:20px">
     <div id="focusTimer" style="font-size:48px;font-weight:bold">00:00:00</div>
     <div style="margin-top:20px">
-      <button id="focusBtn" class="save-btn" onclick="toggleFocus()">开始</button>
+      <button id="focusBtn" style="background:#4a90e2;color:#fff;padding:12px 40px;border:none;border-radius:8px;font-size:16px" onclick="toggleFocus()">开始</button>
     </div>
     <div style="margin-top:30px;font-size:15px;color:var(--gray)">今日累计：<span id="todayFocus">0</span> 分钟</div>
     <div style="margin-top:10px;font-size:15px;color:var(--gray)">信用币：<span id="credits">0</span></div>
@@ -494,7 +416,7 @@ async function doLogin() {
   isGuest = false;
   document.getElementById("loginPage").classList.remove("show");
   await startApp();
-}
+  }
   
 async function guestLogin() {
   const code = "#" + Math.floor(1000 + Math.random() * 9000);
@@ -565,9 +487,9 @@ function openSettings() {
   document.getElementById("setEmail").value = "";
   document.getElementById("setEmailCode").value = "";
   document.getElementById("fbContent").value = "";
-  document.getElementById("settingsPage").classList.add("show");
+  document.getElementById("settingsPage").style.display = "flex";
 }
-function closeSettings() { document.getElementById("settingsPage").classList.remove("show"); }
+function closeSettings() { document.getElementById("settingsPage").style.display = "none"; }
 
 document.getElementById("setAvatarFile").addEventListener("change", function(e) {
   const file = e.target.files[0];
@@ -611,7 +533,6 @@ async function saveSettings() {
     ? avatarEl.src : (userMap[myCode]?.avatar || "");
   const updates = { nickname, gender, bio, avatar };
   if (pwd) updates.password = pwd;
-
   const newEmail = document.getElementById("setEmail").value.trim();
   const emailCode = document.getElementById("setEmailCode").value.trim();
   if (newEmail) {
@@ -622,7 +543,6 @@ async function saveSettings() {
     }
     updates.email = newEmail;
   }
-
   const { error } = await db.from("users").update(updates).eq("code", myCode);
   if (error) { alert("保存失败：" + error.message); return; }
   alert("保存成功");
@@ -763,22 +683,22 @@ async function toggleFav(postId, faved) {
   if (document.getElementById("announcePage").classList.contains("show")) loadAnnounce();
   else loadPosts();
 }
-  
+
 let focusInterval = null;
 let focusSeconds = 0;
 let focusRunning = false;
 
 function openFocus() {
   closeSidebar();
-  document.getElementById("focusPage").classList.add("show");
+  document.getElementById("focusPage").style.display = "flex";
   loadFocusData();
 }
 
 function closeFocus() {
-  document.getElementById("focusPage").classList.remove("show");
+  document.getElementById("focusPage").style.display = "none";
   if (focusRunning) toggleFocus();
-}
-
+  }
+  
 async function loadFocusData() {
   const { data } = await db.from("focus_logs").select("*").eq("user_code", myCode);
   const today = new Date().toISOString().slice(0, 10);
@@ -821,11 +741,6 @@ async function saveFocusTime() {
   alert("已记录 " + minutes + " 分钟专注时间");
 }
 
-function escapeHtml(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-</script>
-</body>
-</html>
-
 async function openComments(postId) {
   currentPostId = postId;
   document.getElementById("overlay").classList.add("show");
@@ -835,14 +750,14 @@ async function openComments(postId) {
   document.getElementById("cmtPost").innerHTML = `
     <div class="post">
       <div class="head">
-        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}" onclick="showProfile('${p.user_code}')">
-        <div><div class="name" onclick="showProfile('${p.user_code}')">${u.nickname} ${adminTag(p.user_code)}</div><div class="code">${p.user_code}</div></div>
+        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22%3E%3Crect fill=%22%23ddd%22 width=%2236%22 height=%2236%22/%3E%3C/svg%3E'}">
+        <div><div class="name">${u.nickname}</div><div class="code">${p.user_code}</div></div>
       </div>
       <div class="content">${escapeHtml(p.content)}${p.image ? `<img src="${p.image}">` : ""}</div>
     </div>`;
   await loadComments();
-}
-
+  }
+  
 async function loadComments() {
   const { data: comments } = await db.from("comments").select("*").eq("post_id", currentPostId).order("created_at", { ascending: true });
   const { data: clikes } = await db.from("comment_likes").select("*");
@@ -858,8 +773,8 @@ async function loadComments() {
     div.className = "cmt-item";
     div.innerHTML = `
       <div class="head">
-        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22%3E%3Crect fill=%22%23ddd%22 width=%2228%22 height=%2228%22/%3E%3C/svg%3E'}" onclick="showProfile('${c.user_code}')">
-        <div><div class="name" onclick="showProfile('${c.user_code}')">${u.nickname} ${adminTag(c.user_code)}</div><div class="code">${c.user_code}</div></div>
+        <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22%3E%3Crect fill=%22%23ddd%22 width=%2228%22 height=%2228%22/%3E%3C/svg%3E'}">
+        <div><div class="name">${u.nickname}</div><div class="code">${c.user_code}</div></div>
       </div>
       <div class="body">${escapeHtml(c.content)}</div>
       <div class="actions">
@@ -890,21 +805,6 @@ async function sendComment() {
 async function delComment(id) { await db.from("comments").delete().eq("id", id); await loadComments(); }
 function closeComments() { document.getElementById("overlay").classList.remove("show"); currentPostId = null; }
 
-async function showMyPosts() {
-  closeSidebar();
-  const { data: posts } = await db.from("posts").select("*").eq("user_code", myCode).order("created_at", { ascending: false });
-  await renderPosts(posts || []);
-}
-
-async function showMyFavs() {
-  closeSidebar();
-  const { data: favs } = await db.from("favorites").select("*").eq("user_code", myCode);
-  const ids = (favs || []).map(f => f.post_id);
-  if (ids.length === 0) { document.getElementById("list").innerText = "还没有收藏"; return; }
-  const { data: posts } = await db.from("posts").select("*").in("id", ids).order("created_at", { ascending: false });
-  await renderPosts(posts || []);
-}
-
 async function loadPosts() {
   const { data: posts, error } = await db.from("posts").select("*").order("created_at", { ascending: false });
   const box = document.getElementById("list");
@@ -915,9 +815,6 @@ async function loadPosts() {
   userMap = {};
   (users || []).forEach(u => userMap[u.code] = u);
   await renderPosts(normal);
-  const seen = await db.from("last_seen").select("*").eq("user_code", myCode);
-  if (seen && seen[0]) await db.from("last_seen").update({ last_viewed: new Date().toISOString() }).eq("user_code", myCode);
-  else await db.from("last_seen").insert({ user_code: myCode, last_viewed: new Date().toISOString() });
 }
 
 async function renderPosts(posts) {
@@ -963,413 +860,6 @@ async function renderPosts(posts) {
     box.appendChild(div);
   });
 }
-
-async function toggleHide(postId, hidden) {
-  await db.from("posts").update({ hidden: !hidden }).eq("id", postId);
-  await writeLog(hidden ? "显示帖子" : "隐藏帖子", "");
-  loadPosts();
-}
-
-async function delPost(id) {
-  if (!confirm("确定删除这条帖子？")) return;
-  await db.from("posts").delete().eq("id", id);
-  if (isAdmin) await writeLog("删除帖子", "");
-  loadPosts();
-}
-
-function openMessages() { closeSidebar(); document.getElementById("messagesPage").classList.add("show"); switchMsgTab("req"); }
-function closeMessages() { document.getElementById("messagesPage").classList.remove("show"); updateBadge(); }
-function switchMsgTab(tab) {
-  document.getElementById("tabReq").classList.toggle("active", tab === "req");
-  document.getElementById("tabChat").classList.toggle("active", tab === "chat");
-  if (tab === "req") loadRequests(); else loadChats();
-}
-
-async function loadRequests() {
-  const box = document.getElementById("msgList");
-  const { data } = await db.from("friend_requests").select("*").eq("to_code", myCode).eq("status", "pending");
-  if (!data || data.length === 0) { box.innerHTML = "<p style='color:#999'>暂无好友申请</p>"; return; }
-  box.innerHTML = "";
-  data.forEach(r => {
-    const u = userMap[r.from_code] || { nickname: "未知", avatar: "" };
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}" onclick="showProfile('${r.from_code}')">
-      <div class="info" onclick="showProfile('${r.from_code}')"><div class="name">${u.nickname}</div><div class="code">${r.from_code}</div></div>
-      <button class="addfriend" onclick="acceptReq(${r.id}, '${r.from_code}')">同意</button>
-      <button class="already" onclick="rejectReq(${r.id})">拒绝</button>
-    `;
-    box.appendChild(div);
-  });
-}
-
-async function acceptReq(id, fromCode) { await db.from("friend_requests").update({ status: "accepted" }).eq("id", id); await loadFriendData(); await loadRequests(); alert("已同意"); }
-async function rejectReq(id) { await db.from("friend_requests").delete().eq("id", id); await loadRequests(); updateBadge(); }
-
-async function loadChats() {
-  const box = document.getElementById("msgList");
-  const { data } = await db.from("messages").select("*");
-  const partners = new Set();
-  (data || []).forEach(m => { if (m.from_code === myCode) partners.add(m.to_code); if (m.to_code === myCode) partners.add(m.from_code); });
-  if (partners.size === 0) { box.innerHTML = "<p style='color:#999'>暂无私信</p>"; return; }
-  box.innerHTML = "";
-  partners.forEach(code => {
-    const u = userMap[code] || { nickname: "未知", avatar: "" };
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}" onclick="showProfile('${code}')">
-      <div class="info" onclick="showProfile('${code}')"><div class="name">${u.nickname}</div><div class="code">${code}</div></div>
-      <button class="follow" onclick="openChat('${code}')">聊天</button>
-    `;
-    box.appendChild(div);
-  });
-}
-
-async function openChat(targetCode) {
-  if (blockMap[targetCode]) { alert("你已拉黑对方"); return; }
-  chatTarget = targetCode;
-  closeMessages();
-  const u = userMap[targetCode] || { nickname: "未知" };
-  document.getElementById("chatName").innerText = u.nickname + " " + targetCode;
-  document.getElementById("chatPage").classList.add("show");
-  await markRead(targetCode);
-  await loadChat();
-  clearInterval(chatTimer);
-  chatTimer = setInterval(loadChat, 2000);
-}
-
-async function markRead(targetCode) {
-  const { data } = await db.from("messages").select("*").eq("from_code", targetCode).eq("to_code", myCode).eq("read", false);
-  for (const m of (data || [])) await db.from("messages").update({ read: true }).eq("id", m.id);
-  updateBadge();
-}
-
-function closeChat() {
-  document.getElementById("chatPage").classList.remove("show");
-  clearInterval(chatTimer);
-  chatTarget = null;
-  updateBadge();
-}
-
-function clearLocalChat() {
-  if (!confirm("清空本地聊天记录？")) return;
-  if (!chatTarget) return;
-  if (!hiddenMsgs[chatTarget]) hiddenMsgs[chatTarget] = [];
-  document.getElementById("chatBody").querySelectorAll(".msg").forEach(el => {
-    if (el.dataset.id) hiddenMsgs[chatTarget].push(Number(el.dataset.id));
-  });
-  localStorage.setItem("hiddenMsgs", JSON.stringify(hiddenMsgs));
-  document.getElementById("chatBody").innerHTML = "";
-  alert("已清空本地记录");
-}
-
-async function loadChat() {
-  if (!chatTarget) return;
-  const { data } = await db.from("messages").select("*");
-  let msgs = (data || []).filter(m => (m.from_code === myCode && m.to_code === chatTarget) || (m.from_code === chatTarget && m.to_code === myCode)).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-  const hidden = hiddenMsgs[chatTarget] || [];
-  msgs = msgs.filter(m => !hidden.includes(m.id));
-  const body = document.getElementById("chatBody");
-  body.innerHTML = "";
-  msgs.forEach(m => {
-    const div = document.createElement("div");
-    const isMine = m.from_code === myCode;
-    const elapsed = (Date.now() - new Date(m.created_at + "Z").getTime()) / 1000;
-    const canRecall = isMine && elapsed < 120;
-    div.className = "msg " + (isMine ? "mine" : "theirs");
-    div.dataset.id = m.id;
-    div.innerHTML = `<div class="bubble" ${canRecall ? `onclick="recallMsg(${m.id})" style="cursor:pointer"` : ""}>${m.content ? escapeHtml(m.content) : ""}${m.image ? `<img src="${m.image}">` : ""}</div>`;
-    body.appendChild(div);
-  });
-  body.scrollTop = body.scrollHeight;
-}
-
-async function recallMsg(id) { if (!confirm("撤回这条消息？")) return; await db.from("messages").delete().eq("id", id); await loadChat(); }
-
-document.getElementById("chatImage").addEventListener("change", async function(e) {
-  const file = e.target.files[0];
-  if (!file || !chatTarget) return;
-  const fileName = "chat_" + Date.now() + "_" + file.name;
-  const { error } = await db.storage.from("images").upload(fileName, file);
-  if (error) { alert("图片上传失败：" + error.message); return; }
-  const { data: urlData } = db.storage.from("images").getPublicUrl(fileName);
-  await db.from("messages").insert({ from_code: myCode, to_code: chatTarget, content: "", image: urlData.publicUrl, read: false });
-  e.target.value = "";
-  await loadChat();
-});
-
-async function sendChat() {
-  const text = document.getElementById("chatText").value.trim();
-  if (!text || !chatTarget) return;
-  await db.from("messages").insert({ from_code: myCode, to_code: chatTarget, content: text, image: "", read: false });
-  document.getElementById("chatText").value = "";
-  await loadChat();
-}
-
-async function unfriend() {
-  if (!confirm("删除这位好友？")) return;
-  await db.from("friend_requests").delete().eq("from_code", myCode).eq("to_code", chatTarget);
-  await db.from("friend_requests").delete().eq("from_code", chatTarget).eq("to_code", myCode);
-  await loadFriendData();
-  closeChat();
-  alert("已删除");
-}
-
-async function blockUser() {
-  if (!confirm("拉黑对方？")) return;
-  await db.from("blocks").insert({ blocker: myCode, blocked: chatTarget });
-  await loadFriendData();
-  closeChat();
-  alert("已拉黑");
-}
-
-function openAdminPanel() {
-  closeSidebar();
-  const box = document.getElementById("adminList");
-  db.from("users").select("*").eq("is_admin", true).then(({ data: users }) => {
-    const filtered = (users || []).filter(u => !u.is_super);
-    if (filtered.length === 0) box.innerHTML = "<p style='color:#999;font-size:13px'>暂无已授权管理员</p>";
-    else {
-      box.innerHTML = "";
-      filtered.forEach(u => {
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerHTML = `
-          <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}">
-          <div class="info"><div class="name">${u.nickname}</div><div class="code">${u.code}</div></div>
-          <button class="revoke" onclick="revokeAdmin('${u.code}')">撤销</button>
-        `;
-        box.appendChild(div);
-      });
-    }
-    document.getElementById("adminPage").classList.add("show");
-  });
-}
-
-function closeAdminPanel() { document.getElementById("adminPage").classList.remove("show"); }
-
-async function revokeAdmin(code) {
-  if (!confirm("确定撤销他的管理员权限？")) return;
-  await db.from("users").update({ is_admin: false }).eq("code", code);
-  await loadPosts();
-  openAdminPanel();
-  alert("已撤销");
-}
-
-function openNotify() {
-  closeSidebar();
-  const box = document.getElementById("notifyList");
-  db.from("admin_logs").select("*").order("created_at", { ascending: false }).limit(50).then(({ data }) => {
-    if (!data || data.length === 0) box.innerHTML = "<p style='color:#999;font-size:13px'>暂无通知</p>";
-    else {
-      box.innerHTML = "";
-      data.forEach(l => {
-        const u = userMap[l.admin_code] || { nickname: "未知" };
-        const div = document.createElement("div");
-        div.className = "log-item";
-        div.innerHTML = `<div class="who">${u.nickname} ${l.admin_code}</div>
-                         <div>${escapeHtml(l.action)}${l.target ? "：" + escapeHtml(l.target) : ""}</div>
-                         <div class="time">${new Date(l.created_at + "Z").toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>`;
-        box.appendChild(div);
-      });
-    }
-    document.getElementById("notifyPage").classList.add("show");
-  });
-}
-
-function closeNotify() { document.getElementById("notifyPage").classList.remove("show"); }
-
-function openFeedback() {
-  closeSidebar();
-  const box = document.getElementById("feedbackList");
-  db.from("feedbacks").select("*").order("created_at", { ascending: false }).then(({ data }) => {
-    if (!data || data.length === 0) box.innerHTML = "<p style='color:#999;font-size:13px'>暂无反馈</p>";
-    else {
-      box.innerHTML = "";
-      data.forEach(f => {
-        const u = userMap[f.from_code] || { nickname: "未知" };
-        const isFromAdmin = u.is_admin && !u.is_super;
-        const tag = isFromAdmin ? "【管理员反馈】" : "【用户反馈】";
-        const div = document.createElement("div");
-        div.style.cssText = "padding:8px 0;border-bottom:1px solid var(--border);font-size:14px";
-        div.innerHTML = `<div style="font-weight:bold">${tag}${u.nickname} ${f.from_code}</div>
-                         <div style="margin-top:4px">${escapeHtml(f.content)}</div>
-                         <div style="color:var(--gray);font-size:12px;margin-top:4px">${new Date(f.created_at + "Z").toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</div>`;
-        box.appendChild(div);
-      });
-    }
-    document.getElementById("feedbackPanel").classList.add("show");
-  });
-}
-
-function closeFeedback() { document.getElementById("feedbackPanel").classList.remove("show"); }
-
-async function updateBadge() {
-  const { data } = await db.from("friend_requests").select("*").eq("to_code", myCode).eq("status", "pending");
-  const n = (data || []).length;
-  const { data: msgs } = await db.from("messages").select("*").eq("to_code", myCode).eq("read", false);
-  const unread = (msgs || []).length;
-  const total = n + unread;
-  const badge = document.getElementById("msgBadge");
-  if (total > 0) { badge.style.display = "inline-block"; badge.innerText = total; }
-  else badge.style.display = "none";
-}
-
-async function loadFollows() {
-  const { data } = await db.from("follows").select("*").eq("follower", myCode);
-  followingMap = {};
-  (data || []).forEach(f => followingMap[f.following] = true);
-}
-
-async function loadFriendData() {
-  friendMap = { pending: {} }; blockMap = {};
-  const { data: reqs } = await db.from("friend_requests").select("*");
-  (reqs || []).forEach(r => {
-    if (r.status === "accepted") {
-      if (r.from_code === myCode) friendMap[r.to_code] = true;
-      if (r.to_code === myCode) friendMap[r.from_code] = true;
-    }
-    if (r.status === "pending" && r.from_code === myCode) friendMap.pending[r.to_code] = true;
-  });
-  const { data: blocks } = await db.from("blocks").select("*").eq("blocker", myCode);
-  (blocks || []).forEach(b => blockMap[b.blocked] = true);
-}
-
-async function sendFriendReq(targetCode) {
-  if (blockMap[targetCode]) { alert("你已拉黑对方"); return; }
-  const { error } = await db.from("friend_requests").insert({ from_code: myCode, to_code: targetCode, status: "pending" });
-  if (error) { alert("申请失败：" + error.message); return; }
-  alert("申请已发送");
-  await loadFriendData();
-  await doSearch();
-}
-
-function showProfile(code) {
-  const u = userMap[code];
-  if (!u) return;
-  document.getElementById("pcAvatar").src = u.avatar || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect fill='%23ddd' width='80' height='80'/%3E%3C/svg%3E";
-  document.getElementById("pcName").innerHTML = (u.nickname || "未知") + " " + adminTag(code);
-  document.getElementById("pcCode").innerText = u.code;
-  document.getElementById("pcGender").innerText = u.gender ? "性别：" + u.gender : "";
-  document.getElementById("pcBio").innerText = u.bio || "这个人很懒，什么都没写";
-  const followBtn = document.getElementById("pcFollowBtn");
-  const isFollowing = followingMap[code];
-  if (code === myCode || isGuest) followBtn.style.display = "none";
-  else {
-    followBtn.style.display = "inline-block";
-    followBtn.innerText = isFollowing ? "已关注" : "关注";
-    followBtn.className = isFollowing ? "unfollow" : "follow";
-    followBtn.onclick = async () => { await toggleFollow(code, followingMap[code]); showProfile(code); };
-  }
-  const friendBtn = document.getElementById("pcFriendBtn");
-  if (code === myCode || isGuest) friendBtn.style.display = "none";
-  else {
-    friendBtn.style.display = "inline-block";
-    const isFriend = friendMap[code];
-    const reqSent = friendMap.pending && friendMap.pending[code];
-    const blocked = blockMap[code];
-    if (blocked) { friendBtn.innerText = "已拉黑"; friendBtn.className = "already"; friendBtn.onclick = null; }
-    else if (isFriend) { friendBtn.innerText = "私信"; friendBtn.className = "unfollow"; friendBtn.onclick = () => { closeProfile(); openChat(code); }; }
-    else if (reqSent) { friendBtn.innerText = "已申请"; friendBtn.className = "already"; friendBtn.onclick = null; }
-    else { friendBtn.innerText = "加好友"; friendBtn.className = "addfriend"; friendBtn.onclick = async () => { await sendFriendReq(code); showProfile(code); }; }
-  }
-  const adminBtn = document.getElementById("pcAdminBtn");
-  if (isSuper && code !== myCode && !u.is_super) {
-    adminBtn.style.display = "inline-block";
-    const targetIsAdmin = u.is_admin;
-    adminBtn.innerText = targetIsAdmin ? "撤销管理员" : "设为管理员";
-    adminBtn.className = targetIsAdmin ? "revoke" : "grant";
-    adminBtn.onclick = async () => {
-      await db.from("users").update({ is_admin: !targetIsAdmin }).eq("code", code);
-      await loadPosts();
-      showProfile(code);
-      alert(targetIsAdmin ? "已撤销" : "已设为管理员");
-    };
-  } else adminBtn.style.display = "none";
-  document.getElementById("profileCard").classList.add("show");
-}
-
-function closeProfile() { document.getElementById("profileCard").classList.remove("show"); }
-
-async function toggleFollow(targetCode, isFollowing) {
-  if (isFollowing) await db.from("follows").delete().eq("follower", myCode).eq("following", targetCode);
-  else await db.from("follows").insert({ follower: myCode, following: targetCode });
-  await loadFollows();
-  await doSearch();
-}
-
-async function showFollowing() {
-  closeSidebar();
-  const { data: posts } = await db.from("posts").select("*").order("created_at", { ascending: false });
-  const list = (posts || []).filter(p => followingMap[p.user_code] && !p.is_announce);
-  const box = document.getElementById("list");
-  if (list.length === 0) { box.innerHTML = "<p style='color:#999;padding:20px;text-align:center'>你关注的人还没有发帖</p>"; return; }
-  const { data: users } = await db.from("users").select("*");
-  userMap = {};
-  (users || []).forEach(u => userMap[u.code] = u);
-  await renderPosts(list);
-}
-
-async function loadHistory() {
-  const { data } = await db.from("search_history").select("*").eq("user_code", myCode).order("created_at", { ascending: false }).limit(20);
-  const box = document.getElementById("historyList");
-  if (!data || data.length === 0) { box.innerHTML = ""; return; }
-  const seen = new Set(); const uniq = [];
-  data.forEach(d => { if (!seen.has(d.keyword)) { seen.add(d.keyword); uniq.push(d); } });
-  box.innerHTML = "";
-  uniq.forEach(d => {
-    const div = document.createElement("div");
-    div.className = "hist-item";
-    div.innerHTML = `<span onclick="searchAgain('${d.keyword}')">${d.keyword}</span>
-                     <span style="color:#c62828;cursor:pointer;" onclick="delHistory(${d.id})">×</span>`;
-    box.appendChild(div);
-  });
-}
-
-function searchAgain(kw) { document.getElementById("searchInput").value = kw; doSearch(); }
-async function delHistory(id) { await db.from("search_history").delete().eq("id", id); await loadHistory(); }
-async function clearHistory() {
-  if (!confirm("清空搜索历史？")) return;
-  await db.from("search_history").delete().eq("user_code", myCode);
-  await loadHistory();
-}
-
-async function doSearch() {
-  const kw = document.getElementById("searchInput").value.trim();
-  const box = document.getElementById("searchResult");
-  if (!kw) { box.innerHTML = ""; return; }
-  await db.from("search_history").insert({ user_code: myCode, keyword: kw });
-  await loadHistory();
-  const { data: users } = await db.from("users").select("*");
-  const matched = (users || []).filter(u => u.nickname.includes(kw) || u.code.includes(kw)).filter(u => u.code !== myCode);
-  if (matched.length === 0) { box.innerHTML = "<p style='color:#999'>没找到</p>"; return; }
-  box.innerHTML = "";
-  matched.forEach(u => {
-    const isFollowing = followingMap[u.code];
-    const isFriend = friendMap[u.code];
-    const reqSent = friendMap.pending && friendMap.pending[u.code];
-    const blocked = blockMap[u.code];
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <img src="${u.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/%3E%3C/svg%3E'}" onclick="showProfile('${u.code}')">
-      <div class="info" onclick="showProfile('${u.code}')">
-        <div class="name">${u.nickname} ${adminTag(u.code)}</div>
-        <div class="code">${u.code}</div>
-      </div>
-      ${isGuest ? '' : `
-        <button class="${isFollowing ? 'unfollow' : 'follow'}" onclick="toggleFollow('${u.code}', ${!!isFollowing})">${isFollowing ? '已关注' : '关注'}</button>
-        ${blocked ? `<button class="already">已拉黑</button>` :
-          isFriend ? `<button class="unfollow" onclick="openChat('${u.code}')">私信</button>` :
-          reqSent ? `<button class="already">已申请</button>` :
-          `<button class="addfriend" onclick="sendFriendReq('${u.code}')">加好友</button>`}
-      `}
-    `;
-    box.appendChild(div);
-  });
-}
 </script>
 </body>
-    </html>
+</html>
