@@ -38,6 +38,22 @@
 </div>
 
 <div class="field">
+  <label>邮箱 *</label>
+  <input type="email" id="email" placeholder="你的邮箱">
+</div>
+
+<div class="field">
+  <label>验证码 *</label>
+  <input type="text" id="emailCode" placeholder="6 位验证码">
+  <button type="button" onclick="sendCode()" style="background:#888">发送验证码</button>
+</div>
+
+<div class="field">
+  <label>密码 *（最少 6 位）</label>
+  <input type="password" id="password" placeholder="你的密码">
+</div>
+
+<div class="field">
   <label>性别（可不选）</label>
   <select id="gender">
     <option value="">不选</option>
@@ -69,6 +85,28 @@ document.getElementById("avatar").onchange = function(e) {
   reader.readAsDataURL(file);
 };
 
+async function sendCode() {
+  const email = document.getElementById("email").value.trim();
+  if (!email) { alert("请先填邮箱"); return; }
+  try {
+    const res = await fetch("https://bzhntlpdouhwcbqcdsfj.supabase.co/functions/v1/hyper-worker", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer sb_publishable_Cwuigqfp_poxrjYjVVtJkQ_klug8TTt" },
+      body: JSON.stringify({ email: email })
+    });
+    const data = await res.json();
+    if (data.code) {
+      await db.from("email_codes").delete().eq("email", email);
+      await db.from("email_codes").insert({ email: email, code: data.code });
+      alert("验证码已发送到邮箱，请查收");
+    } else {
+      alert("发送失败：" + JSON.stringify(data));
+    }
+  } catch (e) {
+    alert("发送失败：" + e.message);
+  }
+}
+
 async function genCode() {
   for (let i = 0; i < 20; i++) {
     const code = "#" + Math.floor(1000 + Math.random() * 9000);
@@ -80,10 +118,25 @@ async function genCode() {
 
 async function register() {
   const nickname = document.getElementById("nickname").value.trim();
-  if (!nickname) { alert("名字不能空"); return; }
-
+  const email = document.getElementById("email").value.trim();
+  const inputCode = document.getElementById("emailCode").value.trim();
+  const password = document.getElementById("password").value;
   const gender = document.getElementById("gender").value;
   const bio = document.getElementById("bio").value.trim();
+
+  if (!nickname) { alert("名字不能空"); return; }
+  if (!email) { alert("请填邮箱"); return; }
+  if (!password || password.length < 6) { alert("密码至少 6 位"); return; }
+
+  const { data: codeRow } = await db.from("email_codes").select("*").eq("email", email);
+  if (!codeRow || codeRow.length === 0 || codeRow[0].code !== inputCode) {
+    alert("验证码不对");
+    return;
+  }
+
+  const { data: exist } = await db.from("users").select("*").eq("email", email);
+  if (exist && exist.length > 0) { alert("这个邮箱已经注册过了"); return; }
+
   const avatarEl = document.getElementById("preview");
   const avatar = avatarEl.src.startsWith("data:image") && avatarEl.src.length > 200
     ? avatarEl.src : "";
@@ -91,10 +144,13 @@ async function register() {
   const code = await genCode();
 
   const { error } = await db.from("users").insert({
-    code: code, nickname: nickname, gender: gender, bio: bio, avatar: avatar
+    code: code, nickname: nickname, gender: gender, bio: bio,
+    avatar: avatar, password: password, email: email
   });
 
   if (error) { alert("注册失败：" + error.message); return; }
+
+  await db.from("email_codes").delete().eq("email", email);
 
   localStorage.setItem("myCode", code);
   document.getElementById("result").innerHTML =
