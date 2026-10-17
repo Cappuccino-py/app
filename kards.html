@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>联机卡牌对战</title>
+<style>
+  body { font-family: sans-serif; background: #1a1a2e; color: #fff; margin: 0; padding: 15px; text-align: center; }
+  h2 { color: #e94560; }
+  .box { background: #16213e; padding: 20px; border-radius: 10px; margin-bottom: 15px; }
+  input { width: 80%; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #e94560; background: #0f3460; color: #fff; font-size: 16px; text-align: center; }
+  button { padding: 10px 20px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; background: #e94560; color: #fff; margin: 5px; }
+  button:active { background: #c0354b; }
+  .hidden { display: none; }
+  .hp-bar { font-size: 24px; font-weight: bold; color: #4ecca3; margin: 10px 0; }
+  .hand { display: flex; justify-content: center; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+  .card { background: #fff; color: #333; width: 90px; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+  .card .name { font-size: 14px; }
+  .card .atk { font-size: 20px; color: #e74c3c; margin-top: 5px; }
+  .logs { background: #0f3460; height: 150px; overflow-y: auto; padding: 10px; text-align: left; font-size: 14px; border-radius: 5px; margin-top: 15px; }
+  .log-item { border-bottom: 1px solid #1a1a2e; padding: 5px 0; }
+</style>
+</head>
+<body>
+  
+<h2>⚔ 联机卡牌对战</h2>
+
+<!-- 大厅：创建或加入房间 -->
+<div class="box" id="lobby">
+  <p>输入对方的编码（如 #1234）发起挑战：</p>
+  <input type="text" id="targetCode" placeholder="对方编码">
+  <div>
+    <button onclick="createRoom()">发起挑战</button>
+  </div>
+  <p style="margin-top:20px; font-size:14px; color:#aaa;">或者，等待别人向你发起挑战...</p>
+  <div class="logs" id="lobbyLogs">等待中...</div>
+</div>
+
+<!-- 游戏区 -->
+<div class="box hidden" id="gameArea">
+  <div class="hp-bar">敌方血量：<span id="enemyHp">30</span></div>
+  <div style="color:#aaa; font-size:14px;" id="turnStatus">等待对手...</div>
+  <div class="hp-bar">我方血量：<span id="myHp">30</span></div>
+  
+  <div class="hand" id="myHand">
+    <!-- 卡牌在这里生成 -->
+  </div>
+
+  <div class="logs" id="gameLogs"></div>
+  <button onclick="exitGame()" style="background:#555; margin-top:15px;">退出对战</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://bzhntlpdouhwcbqcdsfj.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_Cwuigqfp_poxrjYjVVtJkQ_klug8TTt";
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const myCode = localStorage.getItem("myCode");
+
+  let currentRoom = null;
+  let gameInterval = null;
+  let isPlayer1 = false;
+  let myHp = 30;
+  let enemyHp = 30;
+  let currentTurn = "";
+  
+  // 简单的手牌（每次固定这三张）
+  const myCards = [
+    { name: "步兵", atk: 2 },
+    { name: "坦克", atk: 4 },
+    { name: "轰炸机", atk: 6 }
+  ];
+  
+// 初始化手牌
+function renderHand() {
+  const handDiv = document.getElementById("myHand");
+  handDiv.innerHTML = "";
+  myCards.forEach((c, i) => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `<div class="name">${c.name}</div><div class="atk">⚔${c.atk}</div>`;
+    div.onclick = () => playCard(i, c.atk, c.name);
+    handDiv.appendChild(div);
+  });
+}
+
+// 发起挑战
+async function createRoom() {
+  const target = document.getElementById("targetCode").value.trim();
+  if (!target) { alert("请输入对方编码"); return; }
+  if (target === myCode) { alert("不能挑战自己"); return; }
+
+  // 检查对方是否存在
+  const { data: user } = await db.from("users").select("*").eq("code", target);
+  if (!user || user.length === 0) { alert("对方编码不存在"); return; }
+
+  // 创建房间
+  const { data, error } = await db.from("game_rooms").insert({
+    player1: myCode, player2: target, turn: "player1"
+  }).select();
+
+  if (error) { alert("创建失败：" + error.message); return; }
+  
+  currentRoom = data[0];
+  isPlayer1 = true;
+  enterGame();
+}
+
+// 轮询大厅（看有没有人挑战我）
+async function checkLobby() {
+  if (currentRoom) return;
+  const { data } = await db.from("game_rooms").select("*")
+    .eq("player2", myCode).eq("turn", "player1").order("created_at", { ascending: false }).limit(1);
+  
+  if (data && data.length > 0) {
+    currentRoom = data[0];
+    isPlayer1 = false;
+    enterGame();
+  }
+}
+  
+function enterGame() {
+  document.getElementById("lobby").classList.add("hidden");
+  document.getElementById("gameArea").classList.remove("hidden");
+  renderHand();
+  
+  const target = isPlayer1 ? currentRoom.player2 : currentRoom.player1;
+  document.getElementById("gameLogs").innerHTML = `<div class="log-item">对战开始！对手：${target}</div>`;
+  
+  updateGameState(currentRoom);
+  gameInterval = setInterval(pollGame, 2000);
+}
+
+async function pollGame() {
+  if (!currentRoom) return;
+  const { data } = await db.from("game_rooms").select("*").eq("id", currentRoom.id);
+  if (data && data.length > 0) {
+    currentRoom = data[0];
+    updateGameState(currentRoom);
+  }
+}
+
+function updateGameState(room) {
+  myHp = isPlayer1 ? room.hp1 : room.hp2;
+  enemyHp = isPlayer1 ? room.hp2 : room.hp1;
+  currentTurn = room.turn;
+  
+  document.getElementById("myHp").innerText = myHp;
+  document.getElementById("enemyHp").innerText = enemyHp;
+
+  let isMyTurn = (isPlayer1 && currentTurn === 'player1') || (!isPlayer1 && currentTurn === 'player2');
+  
+  const turnText = document.getElementById("turnStatus");
+  if (isMyTurn) {
+    turnText.innerText = "你的回合，请出牌！";
+    turnText.style.color = "#4ecca3";
+  } else {
+    turnText.innerText = "敌方回合，等待...";
+    turnText.style.color = "#e94560";
+  }
+
+  if (room.last_action) {
+    const logs = document.getElementById("gameLogs");
+    // 避免重复渲染最后一条
+    if (!logs.innerHTML.includes(room.last_action)) {
+      logs.innerHTML += `<div class="log-item">${room.last_action}</div>`;
+      logs.scrollTop = logs.scrollHeight;
+    }
+  }
+
+  if (myHp <= 0) { endGame("你输了！"); }
+  if (enemyHp <= 0) { endGame("你赢了！"); }
+  }
+  
+async function playCard(index, atk, name) {
+  const isMyTurn = (isPlayer1 && currentTurn === 'player1') || (!isPlayer1 && currentTurn === 'player2');
+  if (!isMyTurn) { alert("还没轮到你！"); return; }
+
+  // 扣血
+  let newHp1 = currentRoom.hp1;
+  let newHp2 = currentRoom.hp2;
+
+  if (isPlayer1) newHp2 -= atk;
+  else newHp1 -= atk;
+
+  const actionText = `${myCode} 使用了【${name}】，造成 ${atk} 点伤害！`;
+  const nextTurn = isPlayer1 ? 'player2' : 'player1';
+
+  // 更新数据库
+  const { error } = await db.from("game_rooms").update({
+    hp1: newHp1,
+    hp2: newHp2,
+    turn: nextTurn,
+    last_action: actionText
+  }).eq("id", currentRoom.id);
+
+  if (error) { alert("出牌失败"); return; }
+  
+  // 立即刷新本地状态
+  await pollGame();
+}
+
+function endGame(msg) {
+  clearInterval(gameInterval);
+  alert(msg);
+  exitGame();
+}
+
+function exitGame() {
+  clearInterval(gameInterval);
+  currentRoom = null;
+  document.getElementById("lobby").classList.remove("hidden");
+  document.getElementById("gameArea").classList.add("hidden");
+  document.getElementById("gameLogs").innerHTML = "";
+}
+  
+  // 启动轮询
+  if (!myCode) {
+    alert("请先登录主站！");
+    location.href = "index.html";
+  } else {
+    setInterval(checkLobby, 3000);
+  }
+</script>
+</body>
+</html>
